@@ -10,80 +10,40 @@
 
 lexer _lexer; /* Static instance of lexer. Rewrite to use pointers instead. */
 
-static void skip_whitespace();
-static char peek();
-static char peek_next();
-static bool eof();
-static token make_token(token_type type);
-static token error_token(string message);
-static char advance();
-static bool match(char expected);
-static token str();
-static token num();
-static token ident();
-static bool is_digit(char c);
-static bool is_alpha(char c);
-static token_type check_keyword(uint8_t start, uint8_t length, string remainder, token_type type);
-
 void init_lexer(string source) {
     _lexer.left = source;
     _lexer.right = source;
     _lexer.line = 1;
 }
 
-token scan_token() {
-    skip_whitespace();
+/**
+ * Compares provided input against the expected token type and returns the type if they're equal,
+ * otherwise returns a identifier token
+ * @param start the starting index of the string
+ * @param length the length of the remaining string after the starting character
+ * @param remainder the substring of the keyword excluding the start character
+ * @param type the expected token_type
+ * 
+ * @returns The expected token type if memcmp returns 1
+*/
+static token_type check_keyword(uint8_t start, uint8_t length, string remainder,
+                                token_type type) {
+    if ((_lexer.right - _lexer.left == start + length) &&
+        memcmp(_lexer.left + start, remainder, length) == 0)
+        return type;
 
-    _lexer.left = _lexer.right;
+    return TOKEN_IDENTIFIER;
+}
 
-    if (eof())
-        return make_token(TOKEN_EOF);
+static char peek() { return *_lexer.right; }
 
-    char c = advance();
+static char peek_next() { return _lexer.right[1]; }
 
-    if(is_alpha(c)) return ident();
-    if(is_digit(c)) return num();
+static bool eof() { return *_lexer.right == '\0'; }
 
-    switch (c) {
-    case '(':
-        return make_token(TOKEN_LEFT_PAREN);
-    case ')':
-        return make_token(TOKEN_RIGHT_PAREN);
-    case '{':
-        return make_token(TOKEN_LEFT_BRACE);
-    case '}':
-        return make_token(TOKEN_RIGHT_BRACE);
-    case ';':
-        return make_token(TOKEN_SEMICOLON);
-    case ',':
-        return make_token(TOKEN_COMMA);
-    case '.':
-        return make_token(TOKEN_DOT);
-    case '-':
-        return make_token(TOKEN_MINUS);
-    case '+':
-        return make_token(TOKEN_PLUS);
-    case '/':
-        return make_token(TOKEN_SLASH);
-    case '*':
-        return make_token(TOKEN_STAR);
-    case '"':
-        return str();
-    case '!':
-        return make_token(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
-    case '=':
-        return make_token(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
-    case '<':
-        return make_token(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
-    case '>':
-        return make_token(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
-    case '#':
-        while (peek() != '\n' && !eof())
-            advance();
-        return make_token(TOKEN_POUND);
-    }
-
-    return error_token("Unexpected token");
+static char advance() {
+    _lexer.right++;
+    return _lexer.right[-1];
 }
 
 static void skip_whitespace() {
@@ -101,12 +61,6 @@ static void skip_whitespace() {
   }
 }
 
-static char peek() { return *_lexer.right; }
-
-static char peek_next() { return _lexer.right[1]; }
-
-static bool eof() { return *_lexer.right == '\0'; }
-
 static token make_token(token_type type) {
     token tkn;
     tkn.type = type;
@@ -123,11 +77,6 @@ static token error_token(string message) {
     tkn.length = strlen(message);
     tkn.line = _lexer.line;
     return tkn;
-}
-
-static char advance() {
-    _lexer.right++;
-    return _lexer.right[-1];
 }
 
 static bool match(char expected) {
@@ -152,6 +101,12 @@ static token str() {
     advance(); // Eat the closing quotation
 
     return make_token(TOKEN_STRING);
+}
+
+static bool is_digit(char c) { return c >= '0' && c <= '9'; }
+
+static bool is_alpha(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
 }
 
 static token num() {
@@ -242,27 +197,57 @@ static token ident() {
     return make_token(type);
 }
 
-static bool is_digit(char c) { return c >= '0' && c <= '9'; }
+token scan_token() {
+    skip_whitespace();
 
-static bool is_alpha(char c) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
-}
+    _lexer.left = _lexer.right;
 
-/**
- * Compares provided input against the expected token type and returns the type if they're equal,
- * otherwise returns a identifier token
- * @param start the starting index of the string
- * @param length the length of the remaining string after the starting character
- * @param remainder the substring of the keyword excluding the start character
- * @param type the expected token_type
- * 
- * @returns The expected token type if memcmp returns 1
-*/
-static token_type check_keyword(uint8_t start, uint8_t length, string remainder,
-                                token_type type) {
-    if ((_lexer.right - _lexer.left == start + length) &&
-        memcmp(_lexer.left + start, remainder, length) == 0)
-        return type;
+    if (eof())
+        return make_token(TOKEN_EOF);
 
-    return TOKEN_IDENTIFIER;
+    char c = advance();
+
+    if(is_alpha(c)) return ident();
+    if(is_digit(c)) return num();
+
+    switch (c) {
+    case '(':
+        return make_token(TOKEN_LEFT_PAREN);
+    case ')':
+        return make_token(TOKEN_RIGHT_PAREN);
+    case '{':
+        return make_token(TOKEN_LEFT_BRACE);
+    case '}':
+        return make_token(TOKEN_RIGHT_BRACE);
+    case ';':
+        return make_token(TOKEN_SEMICOLON);
+    case ',':
+        return make_token(TOKEN_COMMA);
+    case '.':
+        return make_token(TOKEN_DOT);
+    case '-':
+        return make_token(TOKEN_MINUS);
+    case '+':
+        return make_token(TOKEN_PLUS);
+    case '/':
+        return make_token(TOKEN_SLASH);
+    case '*':
+        return make_token(TOKEN_STAR);
+    case '"':
+        return str();
+    case '!':
+        return make_token(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
+    case '=':
+        return make_token(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
+    case '<':
+        return make_token(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
+    case '>':
+        return make_token(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+    case '#':
+        while (peek() != '\n' && !eof())
+            advance();
+        return make_token(TOKEN_POUND);
+    }
+
+    return error_token("Unexpected token");
 }

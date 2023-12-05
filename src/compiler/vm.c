@@ -3,56 +3,29 @@
 #include "debug.h"
 #include "compiler/compiler.h"
 #include "compiler/result.h"
-#include "compiler/stack.h" /* This header will eventually be implemented in it's own stack.c file */
 #include "compiler/vm.h"
 #include "compiler/values.h"
-
-static void reset_stack();
-static result run();
-static uint8_t read_byte();
-static value read_constant();
-static value peek(int offset);
-static void print_stack_trace();
-static void runtime_error(string format, ...);
-static bool is_falsey(value val);
-static bool values_equal(value a, value b);
 
 /* Static instance of VM. Rewrite this to take a pointer and pass that around
  * instead. */
 vm _dvm;
 
-void init_vm() { reset_stack(); }
-
 static void reset_stack() { _dvm.sp = _dvm.stack; }
 
-void push(value value) {
+void init_vm() { reset_stack(); }
+
+static void push(value value) {
     *_dvm.sp = value;
     _dvm.sp++;
 }
 
-value pop() {
+static value pop() {
     _dvm.sp--;
     return *_dvm.sp;
 }
 
-void free_vm() {}
-
-result interpret(string source) {
-    chunk chunk;
-    init_chunk(&chunk);
-
-    if (!compile(source, &chunk)) {
-        free_chunk(&chunk);
-        return COMPILER_ERROR;
-    }
-
-    _dvm.chunk = &chunk;
-    _dvm.ip = _dvm.chunk->bytes;
-
-    result result = run();
-
-    free_chunk(&chunk);
-    return result;
+void free_vm() {
+    
 }
 
 uint8_t read_byte() { return *_dvm.ip++; }
@@ -61,7 +34,7 @@ value read_constant() { return _dvm.chunk->constants.values[read_byte()]; }
 
 value peek(int offset) { return _dvm.sp[-1 - offset]; }
 
-bool is_falsey(value val) {
+static bool is_falsey(value val) {
     return IS_NONE(val) || (IS_BOOL(val) && !AS_BOOL(val));
 }
 
@@ -80,7 +53,30 @@ static bool values_equal(value a, value b) {
     }
 }
 
-result run() {
+static void runtime_error(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    fputs("\n", stderr);
+
+    size_t instruction = _dvm.ip - _dvm.chunk->bytes - 1;
+    int line = _dvm.chunk->lines[instruction];
+    fprintf(stderr, "[line %d] in script\n", line);
+    reset_stack();
+}
+
+static void print_stack_trace() {
+    printf("          ");
+    for (value* val = _dvm.stack; val < _dvm.sp; ++val) {
+        printf("[ ");
+        print_value(*val);
+        printf(" ]");
+    }
+    printf("\n");
+}
+
+static result run() {
 #define BINARY_OP(val_type, op)                                                \
     do {                                                                       \
         if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                      \
@@ -157,25 +153,20 @@ result run() {
 #undef BINARY_OP
 }
 
-void print_stack_trace() {
-    printf("          ");
-    for (value* val = _dvm.stack; val < _dvm.sp; ++val) {
-        printf("[ ");
-        print_value(*val);
-        printf(" ]");
+result interpret(string source) {
+    chunk chunk;
+    init_chunk(&chunk);
+
+    if (!compile(source, &chunk)) {
+        free_chunk(&chunk);
+        return COMPILER_ERROR;
     }
-    printf("\n");
-}
 
-static void runtime_error(const char* format, ...) {
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
-    fputs("\n", stderr);
+    _dvm.chunk = &chunk;
+    _dvm.ip = _dvm.chunk->bytes;
 
-    size_t instruction = _dvm.ip - _dvm.chunk->bytes - 1;
-    int line = _dvm.chunk->lines[instruction];
-    fprintf(stderr, "[line %d] in script\n", line);
-    reset_stack();
+    result result = run();
+
+    free_chunk(&chunk);
+    return result;
 }
