@@ -6,6 +6,10 @@ Opal is open-source, and was made for academic purposes, and by no means follows
 ## Source Tree
 This is subject to change. Changes may not be reflected here right away.
 
+## TODO
+* Unwrap complex macros into imperative methods
+* Drop let keyword for variable declaration (e.g. identifier = value)
+
 ## Compiling
 
 ### Prerequisites
