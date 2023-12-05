@@ -1,0 +1,6 @@
+.vscode/
+bin/
+target/
+.roadmap.md
+*.out
+*.exe
