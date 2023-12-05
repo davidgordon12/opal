@@ -6,7 +6,7 @@
 #include "debug.h"
 #include "compiler/lexer.h"
 #include "compiler/token_type.h"
-#include "lib/values.h"
+#include "compiler/values.h"
 
 lexer _lexer; /* Static instance of lexer. Rewrite to use pointers instead. */
 

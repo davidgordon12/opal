@@ -3,8 +3,8 @@
 
 #include "common.h"
 #include "compiler/token_type.h"
-#include "lib/chunk.h"
-#include "lib/values.h"
+#include "compiler/chunk.h"
+#include "compiler/values.h"
 
 // #define DEBUG_PRINT_TOKEN
 // #define DEBUG_PRINT_CODE

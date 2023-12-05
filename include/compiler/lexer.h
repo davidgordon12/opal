@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "token.h"
-#include "lib/values.h"
+#include "values.h"
 
 #define MAX_BUFFER 1024
 

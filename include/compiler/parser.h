@@ -1,3 +1,6 @@
+#ifndef _PARSER_H
+#define _PARSER_H
+
 #include "token.h"
 #include "token_type.h"
 #include "lexer.h"
@@ -22,3 +25,5 @@ typedef struct {
     bool had_error;
     bool panic_mode;
 } parser;
+
+#endif

@@ -1,9 +1,9 @@
 #include "common.h"
 #include "debug.h"
-#include "dvm/repl.h"
-#include "dvm/vm.h"
-#include "lib/chunk.h"
-#include "lib/values.h"
+#include "compiler/repl.h"
+#include "compiler/vm.h"
+#include "compiler/chunk.h"
+#include "compiler/values.h"
 
 static void run(string path);
 static mut_string read_file(string path);

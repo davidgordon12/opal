@@ -1,8 +1,8 @@
 #ifndef _VM_H
 #define _VM_H
 
-#include "lib/chunk.h"
-#include "lib/values.h"
+#include "chunk.h"
+#include "values.h"
 #include "result.h"
 
 #define STACK_MAX 512

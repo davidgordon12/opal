@@ -1,4 +1,4 @@
-#include "lib/array.h"
+#include "compiler/array.h"
 
 void init_array(value_array* values) {
     values->count = 0;

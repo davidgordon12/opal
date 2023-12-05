@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "token_type.h"
-#include "lib/values.h"
+#include "values.h"
 #include "common.h"
 
 typedef struct token {

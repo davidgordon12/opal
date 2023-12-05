@@ -1,11 +1,11 @@
 #include <stdarg.h>
 
-#include "compiler/compiler.h"
 #include "debug.h"
-#include "dvm/result.h"
-#include "dvm/stack.h" /* This header will eventually be implemented in it's own stack.c file */
-#include "dvm/vm.h"
-#include "lib/values.h"
+#include "compiler/compiler.h"
+#include "compiler/result.h"
+#include "compiler/stack.h" /* This header will eventually be implemented in it's own stack.c file */
+#include "compiler/vm.h"
+#include "compiler/values.h"
 
 static void reset_stack();
 static result run();

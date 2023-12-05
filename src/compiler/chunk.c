@@ -1,7 +1,7 @@
-#include "lib/chunk.h"
-#include "lib/array.h"
-#include "lib/memory.h"
-#include "lib/values.h"
+#include "compiler/chunk.h"
+#include "compiler/array.h"
+#include "compiler/memory.h"
+#include "compiler/values.h"
 
 void init_chunk(chunk* chunk) {
     chunk->count = 0;
