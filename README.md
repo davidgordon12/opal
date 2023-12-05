@@ -1,5 +1,5 @@
 # Opal - WIP
-Implementation of the Opal programming language. A general-purpose. dynamically typed, interpreted programming language with it's own set of bytecode. 
+Implementation of the Opal programming language. A general-purpose. dynamically typed, stack-based interpreted programming language with it's own set of bytecode. 
 
 Opal is open-source, and was made for academic purposes, and by no means follows best software design practices, or C standards.
 
