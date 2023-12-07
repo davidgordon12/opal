@@ -1,9 +1,9 @@
 #include "common.h"
 #include "debug.h"
-#include "compiler/repl.h"
-#include "compiler/vm.h"
-#include "compiler/chunk.h"
-#include "compiler/values.h"
+#include "vm/repl.h"
+#include "vm/vm.h"
+#include "vm/chunk.h"
+#include "vm/values.h"
 
 static void run(string path);
 static mut_string read_file(string path);
@@ -16,7 +16,7 @@ int main(int argc, string argv[]) {
     } else if(argc == 2) {
         run(argv[1]);
     } else {
-        fprintf(stderr, "Usage: opal [path]\n");
+        fprintf(stderr, "Usage: roo [path]\n");
         exit(64);
     }
 

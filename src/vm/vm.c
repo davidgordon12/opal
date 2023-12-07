@@ -1,10 +1,10 @@
 #include <stdarg.h>
 
 #include "debug.h"
-#include "compiler/compiler.h"
-#include "compiler/result.h"
-#include "compiler/vm.h"
-#include "compiler/values.h"
+#include "vm/compiler.h"
+#include "vm/result.h"
+#include "vm/vm.h"
+#include "vm/values.h"
 
 /* Static instance of VM. Rewrite this to take a pointer and pass that around
  * instead. */

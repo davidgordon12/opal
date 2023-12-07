@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-#include "compiler/compiler.h"
-#include "compiler/lexer.h"
-#include "compiler/parser.h"
-#include "compiler/token.h"
-#include "compiler/token_type.h"
-#include "compiler/chunk.h"
-#include "compiler/values.h"
+#include "vm/compiler.h"
+#include "vm/lexer.h"
+#include "vm/parser.h"
+#include "vm/token.h"
+#include "vm/token_type.h"
+#include "vm/chunk.h"
+#include "vm/values.h"
 #include "debug.h"
 
 typedef void (*parse_fn)();

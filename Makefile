@@ -1,12 +1,12 @@
 INCLUDE_ROOT_PATH := include
-INCLUDE_COMPILER_PATH :=include/compiler
+INCLUDE_VM_PATH :=include/vm
 
-INCLUDE := -I$(INCLUDE_ROOT_PATH) -I$(INCLUDE_COMPILER_PATH)
-TARGET := target/opalc
+INCLUDE := -I$(INCLUDE_ROOT_PATH) -I$(INCLUDE_VM_PATH)
+TARGET := target/opal
 FLAGS := -std=c11 --pedantic -g -Wall -Wextra $(INCLUDE)
 
 source_files := src/*.c
-compiler_source_files := src/compiler/*.c
+vm_source_files := src/vm/*.c
 
 test_source_files := tests/*.c
 
@@ -18,7 +18,7 @@ run: build
 	./$(TARGET)
 
 build:
-	gcc $(FLAGS) $(source_files) $(compiler_source_files) -o $(TARGET)
+	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(TARGET)
 
 debug: build
 	gdb $(TARGET)

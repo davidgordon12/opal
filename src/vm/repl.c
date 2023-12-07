@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "compiler/repl.h"
-#include "compiler/vm.h"
+#include "vm/repl.h"
+#include "vm/vm.h"
 
 void repl() {
     char line[1024];

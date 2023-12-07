@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "compiler/memory.h"
+#include "vm/memory.h"
 
 /*
   The two size arguments passed to reallocate() control which operation to perform:

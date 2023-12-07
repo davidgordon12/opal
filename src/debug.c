@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 #include "debug.h"
-#include "compiler/token_type.h"
-#include "compiler/chunk.h"
-#include "compiler/values.h"
+#include "vm/token_type.h"
+#include "vm/chunk.h"
+#include "vm/values.h"
 
 static int simple_instruction(string name, int offset);
 static int const_instruction(string name, chunk* chunk, int offset);

@@ -2,9 +2,9 @@
 #define _DEBUG_H
 
 #include "common.h"
-#include "compiler/token_type.h"
-#include "compiler/chunk.h"
-#include "compiler/values.h"
+#include "vm/token_type.h"
+#include "vm/chunk.h"
+#include "vm/values.h"
 
 // #define DEBUG_PRINT_TOKEN
 // #define DEBUG_PRINT_CODE

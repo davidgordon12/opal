@@ -4,9 +4,9 @@
 
 #include "common.h"
 #include "debug.h"
-#include "compiler/lexer.h"
-#include "compiler/token_type.h"
-#include "compiler/values.h"
+#include "vm/lexer.h"
+#include "vm/token_type.h"
+#include "vm/values.h"
 
 lexer _lexer; /* Static instance of lexer. Rewrite to use pointers instead. */
 
