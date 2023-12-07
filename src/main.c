@@ -16,7 +16,7 @@ int main(int argc, string argv[]) {
     } else if(argc == 2) {
         run(argv[1]);
     } else {
-        fprintf(stderr, "Usage: roo [path]\n");
+        fprintf(stderr, "Usage: opal [path]\n");
         exit(64);
     }
 
