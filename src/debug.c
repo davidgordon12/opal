@@ -4,6 +4,7 @@
 #include "vm/token_type.h"
 #include "vm/chunk.h"
 #include "vm/values.h"
+#include "vm/object.h"
 
 static int simple_instruction(string name, int offset);
 static int const_instruction(string name, chunk* chunk, int offset);
@@ -91,8 +92,10 @@ static int const_instruction(string name, chunk* chunk, int offset) {
 
 void print_value(value val) {
 
-    switch (val.type)
-    {
+    switch (val.type) {
+    case VAL_OBJ:
+        print_object(val);
+        break;
     case VAL_NUMBER:
         printf("%g", AS_NUMBER(val));
         break;

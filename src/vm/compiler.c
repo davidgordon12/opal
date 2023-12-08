@@ -7,6 +7,8 @@
 #include "vm/token_type.h"
 #include "vm/chunk.h"
 #include "vm/values.h"
+#include "vm/memory.h"
+#include "vm/object.h"
 #include "debug.h"
 
 typedef void (*parse_fn)();
@@ -198,6 +200,12 @@ static void literal() {
     }
 }
 
+static void str() {
+    object_string* str_obj = copy_string(_parser.previous.start+1, _parser.previous.length-2);
+    
+    emit_constant(OBJ_VAL(str_obj));
+}
+
 parse_rule rules[] = {
   [TOKEN_LEFT_PAREN]    = {grouping, NULL,   PREC_NONE},
   [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
@@ -219,7 +227,7 @@ parse_rule rules[] = {
   [TOKEN_LESS]          = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_LESS_EQUAL]    = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_IDENTIFIER]    = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_STRING]        = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_STRING]        = {str,     NULL,   PREC_NONE},
   [TOKEN_NUMBER]        = {number,   NULL,   PREC_NONE},
   [TOKEN_AND]           = {NULL,     NULL,   PREC_NONE},
   [TOKEN_CLASS]         = {NULL,     NULL,   PREC_NONE},

@@ -5,6 +5,7 @@
 #include "vm/result.h"
 #include "vm/vm.h"
 #include "vm/values.h"
+#include "vm/object.h"
 
 /* Static instance of VM. Rewrite this to take a pointer and pass that around
  * instead. */
@@ -129,11 +130,12 @@ static result run() {
         case OP_FALSE:
             push(BOOL_VAL(false));
             break;
-        case OP_EQUAL:
+        case OP_EQUAL: {
             value b = pop();
             value a = pop();
             push(BOOL_VAL(values_equal(a, b)));
             break;
+        }
         case OP_GREATER:
             BINARY_OP(BOOL_VAL, >);
             break;

@@ -37,7 +37,7 @@ static token_type check_keyword(uint8_t start, uint8_t length, string remainder,
 
 static char peek() { return *_lexer.right; }
 
-static char peek_next() { return _lexer.right[1]; }
+/*static char peek_next() { return _lexer.right[1]; }*/
 
 static bool eof() { return *_lexer.right == '\0'; }
 

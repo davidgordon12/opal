@@ -30,7 +30,7 @@ typedef struct {
 #define NUMBER_VAL(val) ((value){VAL_NUMBER, {.number = val}})
 #define BOOL_VAL(val)   ((value){VAL_BOOL, {.boolean = val}})
 #define NONE_VAL           ((value){VAL_NONE, {.number = 0}})
-#define OBJ_VAL(object)   ((Value){VAL_OBJ, {.obj = (object*)obj}})
+#define OBJ_VAL(_obj)   ((value){VAL_OBJ, {.obj = _obj}})
 
 #define AS_BOOL(val)    ((val).as.boolean)
 #define AS_NUMBER(val)  ((val).as.number)
