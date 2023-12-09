@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <string.h>
 
 #include "debug.h"
 #include "vm/compiler.h"
@@ -49,6 +50,12 @@ static bool values_equal(value a, value b) {
         return true;
     case VAL_NUMBER:
         return AS_NUMBER(a) == AS_NUMBER(b);
+    case VAL_OBJ: {
+	object_string* a_str = AS_STRING(a);
+	object_string* b_str = AS_STRING(b);
+	return a_str->length == b_str->length &&
+	    memcmp(a_str->chars, b_str->chars, a_str->length) == 0;
+    }
     default:
         return false;
     }

@@ -18,6 +18,7 @@ run: build
 	./$(TARGET)
 
 build:
+	mkdir -p target
 	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(TARGET)
 
 debug: build
