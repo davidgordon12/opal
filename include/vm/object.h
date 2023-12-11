@@ -12,6 +12,7 @@
 #define AS_CSTRING(val) (((object_string*)AS_OBJ(val))->chars)
 
 object_string* copy_string(string chars, uint64_t length);
+object_string* get_string(mut_string chars, uint64_t length);
 void print_object(value val);
 
 typedef enum {

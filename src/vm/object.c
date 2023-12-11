@@ -29,6 +29,10 @@ object_string* copy_string(string chars, uint64_t length) {
     return allocate_string(heap_chars, length);
 }
 
+object_string* get_string(mut_string chars, uint64_t length) {
+    return allocate_string(chars, length);
+}
+
 void print_object(value val) {
     switch (OBJ_TYPE(val))
     {

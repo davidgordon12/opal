@@ -84,6 +84,21 @@ static void print_stack_trace() {
     printf("\n");
 }
 
+static void concatenate() {
+    object_string* b = AS_STRING(pop());
+    object_string* a = AS_STRING(pop());
+
+    uint64_t length = a->length + b->length;
+
+    mut_string chars = ALLOCATE(char, length + 1);
+    memcpy(chars, a->chars, a->length);
+    memcpy(chars + a->length, b->chars, b->length);
+    chars[length] = '\0';
+
+    object_string* result = get_string(chars, length);
+    push(OBJ_VAL(result));
+}
+
 static result run() {
 #define BINARY_OP(val_type, op)                                                \
     do {                                                                       \
@@ -106,9 +121,19 @@ static result run() {
         case OP_CONSTANT:
             push(read_constant());
             break;
-        case OP_ADD:
-            BINARY_OP(NUMBER_VAL, +);
+        case OP_ADD: {
+            if(IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+                concatenate();
+            } else if(IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
+                double b = AS_NUMBER(pop());
+                double a = AS_NUMBER(pop());
+                push(NUMBER_VAL(a + b));
+            } else {
+                runtime_error("Operands must be of the same type");
+                return RUNTIME_ERROR;
+            }
             break;
+        }
         case OP_SUBTRACT:
             BINARY_OP(NUMBER_VAL, -);
             break;
