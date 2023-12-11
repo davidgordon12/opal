@@ -8,33 +8,34 @@
 #include "vm/values.h"
 #include "vm/object.h"
 
-/* Static instance of VM. Rewrite this to take a pointer and pass that around
- * instead. */
-vm _dvm;
+vm dvm;
 
-static void reset_stack() { _dvm.sp = _dvm.stack; }
+static void reset_stack() { dvm.sp = dvm.stack; }
 
-void init_vm() { reset_stack(); }
+void init_vm() { 
+    reset_stack();
+    dvm.objs = NULL;
+}
 
 static void push(value value) {
-    *_dvm.sp = value;
-    _dvm.sp++;
+    *dvm.sp = value;
+    dvm.sp++;
 }
 
 static value pop() {
-    _dvm.sp--;
-    return *_dvm.sp;
+    dvm.sp--;
+    return *dvm.sp;
 }
 
 void free_vm() {
-    
+   free_objects();
 }
 
-uint8_t read_byte() { return *_dvm.ip++; }
+uint8_t read_byte() { return *dvm.ip++; }
 
-value read_constant() { return _dvm.chunk->constants.values[read_byte()]; }
+value read_constant() { return dvm.chunk->constants.values[read_byte()]; }
 
-value peek(int offset) { return _dvm.sp[-1 - offset]; }
+value peek(int offset) { return dvm.sp[-1 - offset]; }
 
 static bool is_falsey(value val) {
     return IS_NONE(val) || (IS_BOOL(val) && !AS_BOOL(val));
@@ -68,15 +69,15 @@ static void runtime_error(const char* format, ...) {
     va_end(args);
     fputs("\n", stderr);
 
-    size_t instruction = _dvm.ip - _dvm.chunk->bytes - 1;
-    int line = _dvm.chunk->lines[instruction];
+    size_t instruction = dvm.ip - dvm.chunk->bytes - 1;
+    int line = dvm.chunk->lines[instruction];
     fprintf(stderr, "[line %d] in script\n", line);
     reset_stack();
 }
 
 static void print_stack_trace() {
     printf("          ");
-    for (value* val = _dvm.stack; val < _dvm.sp; ++val) {
+    for (value* val = dvm.stack; val < dvm.sp; ++val) {
         printf("[ ");
         print_value(*val);
         printf(" ]");
@@ -114,7 +115,7 @@ static result run() {
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         print_stack_trace();
-        disassemble_instruction(_dvm.chunk, (int)(_dvm.ip - _dvm.chunk->bytes));
+        disassemble_instruction(dvm.chunk, (int)(dvm.ip - dvm.chunk->bytes));
 #endif
         uint8_t instruction = read_byte();
         switch (instruction) {
@@ -196,8 +197,8 @@ result interpret(string source) {
         return COMPILER_ERROR;
     }
 
-    _dvm.chunk = &chunk;
-    _dvm.ip = _dvm.chunk->bytes;
+    dvm.chunk = &chunk;
+    dvm.ip = dvm.chunk->bytes;
 
     result result = run();
 

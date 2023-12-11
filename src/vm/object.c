@@ -19,6 +19,8 @@ static object_string* allocate_string(mut_string chars, uint64_t length) {
 static object* allocate_object(size_t size, object_type type) {
     object* obj = (object*)reallocate(NULL, 0, size);
     obj->type = type;
+    obj->next = dvm.objs;
+    
     return obj;
 }
 

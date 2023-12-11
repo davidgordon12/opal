@@ -1,6 +1,8 @@
 #include <stdlib.h>
 
 #include "vm/memory.h"
+#include "vm/vm.h"
+#include "vm/object.h"
 
 /*
   The two size arguments passed to reallocate() control which operation to perform:
@@ -26,4 +28,24 @@ void* reallocate(void* pointer, size_t old_capacity, size_t new_capacity) {
     }
 
     return result;
+}
+
+static void free_object(object* obj) {
+    switch(obj->type) {
+    case OBJ_STRING: {
+        object_string* str = (object_string*)obj;
+        FREE_ARRAY(char, str->chars, str->length + 1);
+        FREE(object_string, obj);
+        break;
+    }
+    }
+}
+
+void free_objects() {
+    object* obj = dvm.objs;
+    while(obj != NULL) {
+        object* next = obj->next;
+        free_object(obj);
+        obj = next;
+    }
 }

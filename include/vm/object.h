@@ -21,6 +21,7 @@ typedef enum {
 
 struct object {
     object_type type;
+    struct object* next;
 };
 
 struct object_string {
