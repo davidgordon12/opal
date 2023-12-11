@@ -18,15 +18,8 @@ void* reallocate(void* pointer, size_t old_capacity, size_t new_capacity) {
     }
 
     void* result = NULL;
-
-    // If old_capacity is 0, realloc would act as malloc, so this if statement isn't necessary.
-    // However, gcc would give us an unused paramater error if we did nothing with it, so we wrapped it up here.
-    if(old_capacity == 0) {
-        result = malloc(new_capacity);
-    }
-    else {
-        result = realloc(pointer, new_capacity);
-    }
+    
+    result = realloc(pointer, new_capacity);
 
     if(result == NULL) { 
         PANIC("Allocation failed. Not enough memory");
