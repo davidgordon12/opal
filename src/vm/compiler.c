@@ -157,6 +157,9 @@ static void binary() {
     case TOKEN_LESS:          emit_byte(OP_LESS); break;
     case TOKEN_LESS_EQUAL:    emit_bytes(OP_GREATER, OP_NOT); break;
     case TOKEN_PLUS:          emit_byte(OP_ADD); break;
+    case TOKEN_STAR:          emit_byte(OP_MULTIPLY); break;
+    case TOKEN_SLASH:         emit_byte(OP_DIVIDE); break;
+    case TOKEN_MINUS:         emit_byte(OP_SUBTRACT); break;
     default: return; // Unreachable.
   }
 }
