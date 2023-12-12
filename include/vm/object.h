@@ -1,7 +1,6 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
-#include "common.h"
 #include "values.h"
 
 #define OBJ_TYPE(val) (AS_OBJ(val)->type)
@@ -28,6 +27,7 @@ struct object_string {
     object obj;
     uint64_t length;
     mut_string chars;
+    uint32_t hash;
 };
 
 static inline bool is_obj_type(value val, object_type type) {

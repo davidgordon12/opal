@@ -1,8 +1,5 @@
-#include "common.h"
-#include "debug.h"
 #include "vm/repl.h"
 #include "vm/vm.h"
-#include "vm/chunk.h"
 #include "vm/values.h"
 
 static void run(string path);
