@@ -47,14 +47,16 @@ static void resize_table(table* tbl, int capacity) {
         entries[i].key = NULL;
         entries[i].val = NONE_VAL;
     }
-
+    
+    tbl->count = 0;
     for(int i = 0; i < tbl->capacity; i++) {
         entry* ent = &tbl->entries[i];
         if(ent->key == NULL) continue;
-        
+
         entry* dest = find_entry(entries, capacity, ent->key);
         dest->key = ent->key;
         dest->val = ent->val;
+        tbl->count++;
     }
 
     FREE_ARRAY(entry, tbl->entries, tbl->capacity);
@@ -71,7 +73,7 @@ bool table_add(table* tbl, object_string* key, value val) {
     entry* ent = find_entry(tbl->entries, tbl->capacity, key);
     bool exists = ent->key != NULL;
 
-    if(!exists) tbl->count++;
+    if(!exists && IS_NONE(ent->val)) tbl->count++;
 
     ent->key = key;
     ent->val = val;
@@ -81,7 +83,7 @@ bool table_add(table* tbl, object_string* key, value val) {
 
 bool table_remove(table *tbl, object_string *key) {
     if(tbl->count == 0) return false;
-    
+
     entry* ent = find_entry(tbl->entries, tbl->capacity, key);
     if(ent->key == NULL) return false;
 
