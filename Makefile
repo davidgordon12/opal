@@ -26,8 +26,8 @@ build-windows:
 	md windows
 	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(WINDOWS)
 
-debug: build
-	gdb $(TARGET)
+debug: build-unix
+	gdb $(UNIX)
 
 run-file: build
 	./$(TARGET) $(file)
