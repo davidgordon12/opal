@@ -4,6 +4,7 @@
 #include "chunk.h"
 #include "values.h"
 #include "result.h"
+#include "table.h"
 
 #define STACK_MAX 512
 
@@ -13,6 +14,7 @@ typedef struct {
     value stack[STACK_MAX];
     value* sp;
     object* objs;
+    table strings;
 } vm;
 
 extern vm dvm;

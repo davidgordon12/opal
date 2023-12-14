@@ -15,6 +15,7 @@ static void reset_stack() { dvm.sp = dvm.stack; }
 void init_vm() { 
     reset_stack();
     dvm.objs = NULL;
+    init_table(&dvm.strings);
 }
 
 static void push(value value) {
@@ -29,6 +30,7 @@ static value pop() {
 
 void free_vm() {
    free_objects();
+   free_table(&dvm.strings);
 }
 
 uint8_t read_byte() { return *dvm.ip++; }
@@ -51,12 +53,7 @@ static bool values_equal(value a, value b) {
         return true;
     case VAL_NUMBER:
         return AS_NUMBER(a) == AS_NUMBER(b);
-    case VAL_OBJ: {
-        object_string* a_str = AS_STRING(a);
-        object_string* b_str = AS_STRING(b);
-        return a_str->length == b_str->length &&
-            memcmp(a_str->chars, b_str->chars, a_str->length) == 0;
-    }
+    case VAL_OBJ: return AS_OBJ(a) == AS_OBJ(b);
     default:
         return false;
     }

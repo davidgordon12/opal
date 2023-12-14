@@ -11,6 +11,7 @@
 #define AS_STRING(val) ((object_string*)AS_OBJ(val))
 #define AS_CSTRING(val) (((object_string*)AS_OBJ(val))->chars)
 
+object_string* table_search(table* tbl, string chars, int length, uint32_t hash);
 object_string* copy_string(string chars, uint64_t length);
 object_string* get_string(mut_string chars, uint64_t length);
 void print_object(value val);
@@ -28,6 +29,7 @@ struct object_string {
     object obj;
     uint64_t length;
     mut_string chars;
+    uint32_t hash;
 };
 
 static inline bool is_obj_type(value val, object_type type) {
