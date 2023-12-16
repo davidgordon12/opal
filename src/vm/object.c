@@ -60,8 +60,7 @@ object_string* copy_string(string chars, uint64_t length) {
     object_string* interned = table_search(&dvm.strings, chars, length, hash);
 
     if(interned != NULL) {
-        FREE_ARRAY(char, chars, length + 1);
-        return interned;
+	return interned;
     }
 
     char* heap_chars = ALLOCATE(char, length + 1);
@@ -72,6 +71,13 @@ object_string* copy_string(string chars, uint64_t length) {
 
 object_string* get_string(mut_string chars, uint64_t length) {
     uint32_t hash = hash_string(chars, length);
+
+    object_string* interned = table_search(&dvm.strings, chars, length, hash);
+    if(interned != NULL) {
+	FREE_ARRAY(char, chars, length + 1);
+	return interned;
+    }
+
     return allocate_string(chars, length, hash);
 }
 
