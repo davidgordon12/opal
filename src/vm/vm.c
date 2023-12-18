@@ -172,9 +172,11 @@ static result run() {
         case OP_LESS:
             BINARY_OP(BOOL_VAL, <);
             break;
-        case OP_RETURN:
+        case OP_PRINT:
             print_value(pop());
             printf("\n");
+            break;
+        case OP_RETURN:
             return OK;
             break;
         default:

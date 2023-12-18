@@ -2,8 +2,7 @@ INCLUDE_ROOT_PATH := include
 INCLUDE_VM_PATH :=include/vm
 
 INCLUDE := -I$(INCLUDE_ROOT_PATH) -I$(INCLUDE_VM_PATH)
-UNIX := unix/opal.out
-WINDOWS := windows/opal.exe
+TARGET := unix/opal.out
 FLAGS := -std=c11 --pedantic -g -Wall -Wextra $(INCLUDE)
 
 source_files := src/*.c
@@ -15,21 +14,16 @@ object_files := bin/*.o
 
 file := samples/test.opal
 
-run: build-unix
-	./$(UNIX)
+run: build
+	./$(TARGET)
 
-build-unix:
+build:
 	mkdir -p unix
-	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(UNIX)
+	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(TARGET)
 
-build-windows:
-	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(WINDOWS)
 
-windows: build-windows
-	./$(WINDOWS)
-
-debug: build-unix
-	gdb $(UNIX)
+debug: build
+	gdb $(TARGET)
 
 run-file: build
 	./$(TARGET) $(file)

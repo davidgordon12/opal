@@ -20,6 +20,7 @@ typedef enum {
     OP_DIVIDE,
     OP_NEGATE,
     OP_RETURN,
+    OP_PRINT,
 } opcode;
 
 typedef struct chunk {

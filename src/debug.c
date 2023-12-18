@@ -50,6 +50,8 @@ int disassemble_instruction(chunk* chunk, int offset) {
         return simple_instruction("OP_GREATEER", offset);
     case OP_LESS:
         return simple_instruction("OP_LESS", offset);
+    case OP_PRINT:
+        return simple_instruction("OP_PRINT", offset);
     default:
         printf("Unknown opcode %d\n", instruction);
         return offset + 1;
@@ -72,6 +74,7 @@ string get_token_name(token_type type) {
     case TOKEN_NONE: return "TOKEN_NONE";
     case TOKEN_AND: return "TOKEN_AND";
     case TOKEN_PROC: return "TOKEN_PROC";
+    case TOKEN_PRINT: return "TOKEN_PRINT";
     case TOKEN_EOF: return "TOKEN_EOF";
     default: return "UNIMPLEMENTED TOKEN";
     }

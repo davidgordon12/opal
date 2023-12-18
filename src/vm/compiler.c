@@ -22,6 +22,9 @@ typedef struct  {
 parser _parser;
 chunk* curr_chunk;
 
+static void statement();
+static void declaration();
+static bool match(token_type type);
 static parse_rule* get_rule(token_type type);
 static void error_at_current(string message);
 static void error_at(token* token, string message);
@@ -88,6 +91,33 @@ static void end_compilation() {
 #endif
 }
 
+static bool check_type(token_type type) {
+    return _parser.current.type == type;
+}
+
+static bool match(token_type type) {
+    if(!check_type(type)) return false;
+
+    advance();
+    return true;
+}
+
+static void print_statement() {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expected ';' after value.");
+    emit_byte(OP_PRINT);
+}
+
+static void statement() {
+    if(match(TOKEN_PRINT)) {
+        print_statement();
+    }
+}
+
+static void declaration() {
+    statement();
+}
+
 bool compile(string source, chunk* chunk) {
     init_lexer(source);
     curr_chunk = chunk;
@@ -97,9 +127,9 @@ bool compile(string source, chunk* chunk) {
 
     advance();
 
-    expression();
-
-    consume(TOKEN_EOF, "Expected end of expression");
+    while(!match(TOKEN_EOF)) {
+        declaration();
+    }
 
     end_compilation();
 
