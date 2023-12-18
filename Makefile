@@ -23,8 +23,10 @@ build-unix:
 	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(UNIX)
 
 build-windows:
-	md windows
 	gcc $(FLAGS) $(source_files) $(vm_source_files) -o $(WINDOWS)
+
+windows: build-windows
+	./$(WINDOWS)
 
 debug: build-unix
 	gdb $(UNIX)
