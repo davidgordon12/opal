@@ -19,8 +19,11 @@ typedef enum {
     OP_MULTIPLY,
     OP_DIVIDE,
     OP_NEGATE,
-    OP_RETURN,
     OP_PRINT,
+    OP_POP,
+    OP_DEFINE_GLOBAL,
+    OP_GET_GLOBAL,
+    OP_RETURN,
 } opcode;
 
 typedef struct chunk {

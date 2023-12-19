@@ -6,9 +6,9 @@
 #include "vm/chunk.h"
 #include "vm/values.h"
 
-//#define DEBUG_PRINT_TOKEN
-//#define DEBUG_PRINT_CODE
-//#define DEBUG_TRACE_EXECUTION
+#define DEBUG_PRINT_TOKEN
+#define DEBUG_PRINT_CODE
+#define DEBUG_TRACE_EXECUTION
 
 void disassemble_chunk(chunk* chunk, string name);
 int disassemble_instruction(chunk* chunk, int offset);

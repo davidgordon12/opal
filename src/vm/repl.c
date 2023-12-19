@@ -12,15 +12,8 @@ void repl() {
         printf("\n$ ");
 
         if(!fgets(line, sizeof(line), stdin)) {
-            printf("\n");
             break;
         }
-
-        for(int i = 0; i < 1024; i++) {
-            if(line[i] == '\n') line[i] = '\0';
-        }
-
-        line[1024] = '\0';
         
         interpret(line);
     }

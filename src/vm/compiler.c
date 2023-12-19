@@ -26,6 +26,8 @@ static void statement();
 static void declaration();
 static bool match(token_type type);
 static parse_rule* get_rule(token_type type);
+static uint8_t make_constant(value value);
+static void emit_bytes(uint8_t byte1, uint8_t byte2);
 static void error_at_current(string message);
 static void error_at(token* token, string message);
 static void error(string message);
@@ -108,14 +110,64 @@ static void print_statement() {
     emit_byte(OP_PRINT);
 }
 
+static void expression_statement() {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expected ';' after expression.");
+    emit_byte(OP_POP);
+}
+
 static void statement() {
     if(match(TOKEN_PRINT)) {
         print_statement();
+    } else {
+        expression_statement();
     }
 }
 
+static uint8_t parse_var(string message) {
+    consume(TOKEN_IDENTIFIER, message);
+    return make_constant(OBJ_VAL(copy_string(_parser.previous.start, _parser.previous.length)));
+}
+
 static void declaration() {
+    if(match(TOKEN_LET)) {
+        uint8_t global = parse_var("Expected variable name.");
+
+        if(match(TOKEN_EQUAL)) {
+            expression();
+        } else {
+            emit_byte(OP_NONE);
+        }
+
+        consume(TOKEN_SEMICOLON, "Expected ';' after varibale declaration.");
+
+        emit_bytes(OP_DEFINE_GLOBAL, global);
+    } else {
+
+    }
     statement();
+
+    if(!_parser.panic_mode) {
+        return;
+    }
+
+    _parser.panic_mode = false;
+    while(_parser.current.type != TOKEN_EOF) {
+        if(_parser.previous.type == TOKEN_SEMICOLON) return;
+        switch(_parser.current.type) {
+        case TOKEN_CLASS:
+        case TOKEN_PROC:
+        case TOKEN_LET:
+        case TOKEN_FOR:
+        case TOKEN_IF:
+        case TOKEN_WHILE:
+        case TOKEN_PRINT:
+        case TOKEN_RETURN: return;
+        default:
+        }
+    }
+
+    advance();
 }
 
 bool compile(string source, chunk* chunk) {
@@ -235,8 +287,16 @@ static void literal() {
 
 static void str() {
     object_string* str_obj = copy_string(_parser.previous.start+1, _parser.previous.length-2);
-    
     emit_constant(OBJ_VAL(str_obj));
+}
+
+static void named_variable(token name) {
+    uint8_t arg = make_constant(OBJ_VAL(copy_string(_parser.previous.start, _parser.previous.length)));
+    emit_bytes(OP_GET_GLOBAL, arg);
+}
+
+static void variable() {
+    named_variable(_parser.previous);
 }
 
 parse_rule rules[] = {
@@ -259,7 +319,7 @@ parse_rule rules[] = {
   [TOKEN_GREATER_EQUAL] = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_LESS]          = {NULL,     binary,   PREC_COMPARISON},
   [TOKEN_LESS_EQUAL]    = {NULL,     binary,   PREC_COMPARISON},
-  [TOKEN_IDENTIFIER]    = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_IDENTIFIER]    = {variable,     NULL,   PREC_NONE},
   [TOKEN_STRING]        = {str,     NULL,   PREC_NONE},
   [TOKEN_NUMBER]        = {number,   NULL,   PREC_NONE},
   [TOKEN_AND]           = {NULL,     NULL,   PREC_NONE},

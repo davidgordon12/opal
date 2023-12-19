@@ -16,6 +16,7 @@ void init_vm() {
     reset_stack();
     dvm.objs = NULL;
     init_table(&dvm.strings);
+    init_table(&dvm.globals);
 }
 
 static void push(value value) {
@@ -31,6 +32,7 @@ static value pop() {
 void free_vm() {
    free_objects();
    free_table(&dvm.strings);
+   free_table(&dvm.globals);
 }
 
 uint8_t read_byte() { return *dvm.ip++; }
@@ -98,6 +100,7 @@ static void concatenate() {
 }
 
 static result run() {
+#define READ_STRING() AS_STRING(read_constant())
 #define BINARY_OP(val_type, op)                                                \
     do {                                                                       \
         if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                      \
@@ -176,6 +179,25 @@ static result run() {
             print_value(pop());
             printf("\n");
             break;
+        case OP_POP:
+            pop();
+            break;
+        case OP_DEFINE_GLOBAL: {
+            object_string* name = READ_STRING();
+            table_add(&dvm.globals, name, peek(0));
+            pop();
+            break;
+        }
+        case OP_GET_GLOBAL: {
+            object_string* name = READ_STRING();
+            value val;
+            if(!table_get(&dvm.globals, name, &val)) {
+                runtime_error("Undefined variable '%s'.", name->chars);
+                return RUNTIME_ERROR;
+            }
+            push(val);
+            break;
+        }
         case OP_RETURN:
             return OK;
             break;
