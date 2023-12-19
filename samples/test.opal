@@ -1,1 +1,0 @@
-let beverage = "cafe au lait";
