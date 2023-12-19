@@ -14,7 +14,16 @@ void repl() {
         if(!fgets(line, sizeof(line), stdin)) {
             break;
         }
-        
+
+        for(int i = 0; i < 1024; i++) {
+            switch(line[i]) {
+            case '\r':
+            case '\t':
+            case '\n':
+                line[i] = '\0';
+            }
+        }
+
         interpret(line);
     }
 }

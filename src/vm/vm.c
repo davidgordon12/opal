@@ -198,6 +198,15 @@ static result run() {
             push(val);
             break;
         }
+        case OP_SET_GLOBAL: {
+            object_string* name = READ_STRING();
+            if(table_add(&dvm.globals, name, peek(0))) {
+                table_remove(&dvm.globals, name);
+                runtime_error("Undefined vairable '%s'.", name->chars);
+                return RUNTIME_ERROR;
+            }
+            break;
+        }
         case OP_RETURN:
             return OK;
             break;
