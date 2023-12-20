@@ -39,7 +39,7 @@ fn main() {
         }
     }
 
-    let mut lexer: Lexer = Lexer::new("A b C d EFG hiJkL mno P".to_string());
+    let mut lexer: Lexer = Lexer::new("((((((".to_string());
     lexer.tokenize();
 
     let compiler: Compiler = Compiler {
