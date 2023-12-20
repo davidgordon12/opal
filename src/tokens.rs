@@ -1,5 +1,4 @@
-#[derive(Debug, PartialEq, Eq)]
-#[allow(dead_code)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TokenType {
     // Single-character tokens.
     TokenLeftParen, TokenRightParen,
@@ -25,8 +24,7 @@ pub enum TokenType {
     TokenError, TokenEof,
 }
 
-#[derive(Debug)]
-#[allow(dead_code)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub line: i32,
     pub literal: String,

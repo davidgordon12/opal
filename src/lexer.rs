@@ -18,16 +18,21 @@ impl Lexer {
         }
     }
 
-    pub fn tokenize(&mut self) {
+    pub fn tokenize(&mut self) -> Vec<Token> {
+        let mut tokens: Vec<Token> = vec![];
+
         loop {
             let token: Token = self.next_token();
-            println!("{:?}", token.literal);     
+            tokens.push(token.clone());
 
-            if(token.token_type == TokenType::TokenEof) { 
-                return;
+            if token.token_type == TokenType::TokenEof || 
+                token.token_type == TokenType::TokenError 
+            { 
+                break;
             }
-
         } 
+
+        tokens
     }
 
     fn next_token(&mut self) -> Token {
@@ -80,7 +85,7 @@ impl Lexer {
     
     fn peek(&mut self) -> char {
         let index: usize = self.current.try_into().unwrap();
-        if(self.eof()) {
+        if self.eof() {
             return '\0';
         }
         self.source.as_bytes()[index] as char
@@ -98,14 +103,12 @@ impl Lexer {
         loop {
             match self.peek() {
                 ' ' => self.read_char(),
-                '\r' => { 
-                    self.line += 1; 
-                    self.read_char() 
-                },
                 '\t' => { 
-                    self.line += 1; 
                     self.read_char() 
                 },
+                '\r' => {
+                    self.read_char() 
+                }
                 '\n' => { 
                     self.line += 1; 
                     self.read_char() 
@@ -135,7 +138,6 @@ impl Lexer {
         println!("Opal: \x1b[91mSyntax Error\x1b[0m");
         println!("{} on line: \x1b[93m{}\x1b[0m", message, self.line);
         self.error = true;
-
         self.make_token(TokenType::TokenError)
     }
 }

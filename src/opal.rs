@@ -1,0 +1,24 @@
+use std::collections::VecDeque;
+use std::fs;
+
+use crate::compiler::Compiler;
+use crate::lexer::Lexer;
+use crate::tokens::Token;
+
+fn read_file(path: String) -> String {
+    fs::read_to_string(path).unwrap()
+}
+
+pub fn opalc(files: VecDeque<String>) {
+    for x in files {
+        let source: String = read_file(x);
+
+        let mut lexer: Lexer = Lexer::new(source);
+        let _tokens: Vec<Token> = lexer.tokenize();
+
+        // parser
+
+        let compiler: Compiler = Compiler {};
+        compiler.run();   
+    }
+}
