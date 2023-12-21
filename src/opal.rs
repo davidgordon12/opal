@@ -17,7 +17,7 @@ pub fn opalc(files: VecDeque<String>) {
         let tokens: Vec<Token> = lexer.tokenize();
 
         for x in tokens {
-            println!("{} : {}", &x.literal, &x.line);
+            println!("{:#?} : {:#?} : {}", x.literal, x.token_type, x.line);
         }
 
         // parser

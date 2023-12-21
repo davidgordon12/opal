@@ -1,10 +1,11 @@
-use std::error::Error;
+use std::{error::Error, slice};
 use crate::tokens::*;
 
 pub struct Lexer {
     source: String,
     line: i32,
     current: i32,
+    start: i32,
     ch: char,
     error: bool,
 }
@@ -15,6 +16,7 @@ impl Lexer {
             source: source,
             line: 1,
             current: 0,
+            start: 0,
             ch: '0',
             error: false,
         }
@@ -46,17 +48,14 @@ impl Lexer {
 
         self.read_char();
 
-        /*
-        if self.is_alpha() {
-            Call our identifier method
-            todo!()
+        if self.ch.is_alphabetic() {
+            return self.read_ident()
         }
 
-        if self.is_numeric() {
-            Call our integer method
-            todo!()
+        if self.ch.is_numeric() {
+            return self.read_number()
         }
- */
+
         match self.ch {
             '(' => return self.make_token(TokenType::TokenLeftParen),
             ')' => return self.make_token(TokenType::TokenRightParen),
@@ -65,18 +64,17 @@ impl Lexer {
             '[' => return self.make_token(TokenType::TokenLeftBracket),
             ']' => return self.make_token(TokenType::TokenRightBracket),
             ',' => return self.make_token(TokenType::TokenComma),
+            '"' => return self.make_token(TokenType::TokenString),
             ';' => return self.make_token(TokenType::TokenSemicolon),
             '+' => return self.make_token(TokenType::TokenPlus),
             '-' => return self.make_token(TokenType::TokenMinus),
             '*' => return self.make_token(TokenType::TokenStar),
             '/' => return self.make_token(TokenType::TokenSlash),
             '=' => {
-                if self.peek() == '=' {
-                    self.read_char();
-                    return self.make_token(TokenType::TokenEqualEqual)
-                } 
-
-                return self.make_token(TokenType::TokenEqual);
+                match self.next_char('=') {
+                    true => return self.make_token(TokenType::TokenEqualEqual),
+                    false => return self.make_token(TokenType::TokenEqual),
+                };
             },
             '!' => return self.make_token(TokenType::TokenBang),
             '>' => return self.make_token(TokenType::TokenGreater),
@@ -112,6 +110,18 @@ impl Lexer {
             TokenType::TokenBang => literal = "bang",
             TokenType::TokenPound => literal = "pound",
             TokenType::TokenEqualEqual => literal = "equal_equal",
+            TokenType::TokenAnd => literal = "and",
+            TokenType::TokenProc => literal = "proc",
+            TokenType::TokenIf => literal = "if",
+            TokenType::TokenElse => literal = "else",
+            TokenType::TokenOr => literal = "or",
+            TokenType::TokenFor => literal = "for",
+            TokenType::TokenTrue => literal = "true",
+            TokenType::TokenFalse => literal = "false",
+            TokenType::TokenLet => literal = "let",
+            TokenType::TokenNone => literal = "none",
+            TokenType::TokenNot => literal = "not",
+            TokenType::TokenReturn => literal = "return",
             TokenType::TokenError => literal = "error",
             TokenType::TokenEof => literal = "eof",
             _ => literal = "error",            
@@ -131,13 +141,65 @@ impl Lexer {
         let index: usize = self.current.try_into().unwrap();
         self.source.as_bytes()[index] as char
     }
-    
-    fn read_ident(&mut self) {
-        
+
+    fn next_char(&mut self, ch: char) -> bool {
+        if self.eof() {
+            return false
+        }
+
+        let index: usize = self.current.try_into().unwrap();
+        if self.source.as_bytes()[index] as char == ch {
+            self.ch = ch;
+            self.current += 1;
+            return true
+        }
+
+        false
     }
     
-    fn read_number(&mut self) {
-        
+    fn read_ident(&mut self) -> Token {
+        self.start = self.current - 1;
+        while self.ch.is_alphabetic() {
+            self.read_char();
+        }
+
+        let ident: String = self.source
+            .chars()
+            .skip(self.start as usize)
+            .take(((self.current-self.start) - 1) as usize)
+            .collect();
+
+    
+        let token_type = reserved_keyword(&ident.to_lowercase());
+
+        if token_type != TokenType::TokenIdentifier {
+            return self.make_token(token_type)
+        }
+
+        Token {
+            line: self.line,
+            literal: ident,
+            token_type: token_type
+        }
+    }
+    
+    fn read_number(&mut self) -> Token {
+        self.start = self.current - 1;
+        while self.ch.is_numeric() {
+            self.read_char();
+        }
+
+        let ident: String = self.source
+            .chars()
+            .skip(self.start as usize)
+            .take(((self.current-self.start) - 1) as usize)
+            .collect();
+
+        Token {
+            line: self.line,
+            literal: ident,
+            token_type: TokenType::TokenNumber,
+        }
     }
     
     fn skip_whitespace(&mut self) {
@@ -157,18 +219,6 @@ impl Lexer {
                 _ => return,
             };
         }
-    }
-
-    fn is_alpha(&self) -> bool {
-        todo!()
-    }
-
-    fn is_numeric(&self) -> bool {
-        todo!()
-    }
-
-    fn new_token(&mut self) -> Token {
-        todo!()
     }
 
     fn eof(&self) -> bool {

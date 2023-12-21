@@ -17,10 +17,9 @@ pub enum TokenType {
     TokenIdentifier, TokenString, TokenNumber,
     
     // Keywords.
-    TokenAnd, TokenClass, TokenElse, TokenFalse,
+    TokenAnd, TokenElse, TokenFalse,
     TokenFor, TokenProc, TokenIf, TokenNone, TokenOr,
-    TokenPrint, TokenReturn, TokenSuper, TokenThis,
-    TokenTrue, TokenLet, TokenWhile, TokenNot,
+    TokenReturn, TokenTrue, TokenLet, TokenNot,
     
     TokenError, TokenEof,
 }
@@ -37,6 +36,15 @@ pub fn reserved_keyword(keyword: &str) -> TokenType {
         "and" => TokenType::TokenAnd,
         "proc" => TokenType::TokenProc,
         "if" => TokenType::TokenIf,
+        "else" => TokenType::TokenElse,
+        "or" => TokenType::TokenOr,
+        "for" => TokenType::TokenFor,
+        "true" => TokenType::TokenTrue,
+        "false" => TokenType::TokenFalse,
+        "let" => TokenType::TokenLet,
+        "none" => TokenType::TokenNone,
+        "not" => TokenType::TokenNot,
+        "return" => TokenType::TokenReturn,
         _ => TokenType::TokenIdentifier,
     }
 }
