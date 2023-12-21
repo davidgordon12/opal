@@ -1,4 +1,6 @@
+use std::error::Error;
 use crate::tokens::*;
+
 pub struct Lexer {
     source: String,
     line: i32,
@@ -62,12 +64,23 @@ impl Lexer {
             '}' => return self.make_token(TokenType::TokenRightBrace),
             '[' => return self.make_token(TokenType::TokenLeftBracket),
             ']' => return self.make_token(TokenType::TokenRightBracket),
+            ',' => return self.make_token(TokenType::TokenComma),
+            ';' => return self.make_token(TokenType::TokenSemicolon),
             '+' => return self.make_token(TokenType::TokenPlus),
             '-' => return self.make_token(TokenType::TokenMinus),
             '*' => return self.make_token(TokenType::TokenStar),
             '/' => return self.make_token(TokenType::TokenSlash),
-            '=' => return self.make_token(TokenType::TokenEqual),
+            '=' => {
+                if self.peek() == '=' {
+                    self.read_char();
+                    return self.make_token(TokenType::TokenEqualEqual)
+                } 
+
+                return self.make_token(TokenType::TokenEqual);
+            },
             '!' => return self.make_token(TokenType::TokenBang),
+            '>' => return self.make_token(TokenType::TokenGreater),
+            '<' => return self.make_token(TokenType::TokenLess),
             '#' => return self.make_token(TokenType::TokenPound),
             _ => return self.error("Invalid character"),
         };
@@ -89,6 +102,8 @@ impl Lexer {
             TokenType::TokenRightBrace => literal = "right_brace",
             TokenType::TokenLeftBracket => literal = "left_bracket",
             TokenType::TokenRightBracket => literal = "right_bracket",
+            TokenType::TokenComma => literal = "comma",
+            TokenType::TokenSemicolon => literal = "semicolon",
             TokenType::TokenPlus => literal = "plus",
             TokenType::TokenMinus => literal = "minus",
             TokenType::TokenStar => literal = "star",
@@ -96,6 +111,7 @@ impl Lexer {
             TokenType::TokenEqual => literal = "equal",
             TokenType::TokenBang => literal = "bang",
             TokenType::TokenPound => literal = "pound",
+            TokenType::TokenEqualEqual => literal = "equal_equal",
             TokenType::TokenError => literal = "error",
             TokenType::TokenEof => literal = "eof",
             _ => literal = "error",            
@@ -109,10 +125,10 @@ impl Lexer {
     }
     
     fn peek(&mut self) -> char {
-        let index: usize = self.current.try_into().unwrap();
         if self.eof() {
-            return '\0';
+            return '\0'
         }
+        let index: usize = self.current.try_into().unwrap();
         self.source.as_bytes()[index] as char
     }
     
