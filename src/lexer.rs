@@ -79,34 +79,34 @@ impl Lexer {
         self.current += 1;
     }
     
-        fn make_token(&mut self, token_type: TokenType) -> Token {
-            let mut literal = "";
-            
-            match token_type {
-                TokenType::TokenLeftParen => literal = "left_paren",
-                TokenType::TokenRightParen => literal = "right_paren",
-                TokenType::TokenLeftBrace => literal = "left_brace",
-                TokenType::TokenRightBrace => literal = "right_brace",
-                TokenType::TokenLeftBracket => literal = "left_bracket",
-                TokenType::TokenRightBracket => literal = "right_bracket",
-                TokenType::TokenPlus => literal = "plus",
-                TokenType::TokenMinus => literal = "minus",
-                TokenType::TokenStar => literal = "star",
-                TokenType::TokenSlash => literal = "slash",
-                TokenType::TokenEqual => literal = "equal",
-                TokenType::TokenBang => literal = "bang",
-                TokenType::TokenPound => literal = "pound",
-                TokenType::TokenError => literal = "error",
-                TokenType::TokenEof => literal = "eof",
-                _ => literal = "error",
-            }
-    
-            Token {
-                token_type: token_type,
-                line: self.line,
-                literal: literal.to_string(),
-            }
+    fn make_token(&mut self, token_type: TokenType) -> Token {
+        let mut literal = "";            
+
+        match token_type {
+            TokenType::TokenLeftParen => literal = "left_paren",
+            TokenType::TokenRightParen => literal = "right_paren",
+            TokenType::TokenLeftBrace => literal = "left_brace",
+            TokenType::TokenRightBrace => literal = "right_brace",
+            TokenType::TokenLeftBracket => literal = "left_bracket",
+            TokenType::TokenRightBracket => literal = "right_bracket",
+            TokenType::TokenPlus => literal = "plus",
+            TokenType::TokenMinus => literal = "minus",
+            TokenType::TokenStar => literal = "star",
+            TokenType::TokenSlash => literal = "slash",
+            TokenType::TokenEqual => literal = "equal",
+            TokenType::TokenBang => literal = "bang",
+            TokenType::TokenPound => literal = "pound",
+            TokenType::TokenError => literal = "error",
+            TokenType::TokenEof => literal = "eof",
+            _ => literal = "error",            
         }
+
+        Token {
+            token_type: token_type,
+            line: self.line,
+            literal: literal.to_string(),
+        }
+    }
     
     fn peek(&mut self) -> char {
         let index: usize = self.current.try_into().unwrap();
