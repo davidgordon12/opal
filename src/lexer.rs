@@ -46,15 +46,29 @@ impl Lexer {
 
         /*
         if self.is_alpha() {
+            Call our identifier method
             todo!()
         }
 
         if self.is_numeric() {
+            Call our integer method
             todo!()
         }
  */
         match self.ch {
             '(' => return self.make_token(TokenType::TokenLeftParen),
+            ')' => return self.make_token(TokenType::TokenRightParen),
+            '{' => return self.make_token(TokenType::TokenLeftBrace),
+            '}' => return self.make_token(TokenType::TokenRightBrace),
+            '[' => return self.make_token(TokenType::TokenLeftBracket),
+            ']' => return self.make_token(TokenType::TokenRightBracket),
+            '+' => return self.make_token(TokenType::TokenPlus),
+            '-' => return self.make_token(TokenType::TokenMinus),
+            '*' => return self.make_token(TokenType::TokenStar),
+            '/' => return self.make_token(TokenType::TokenSlash),
+            '=' => return self.make_token(TokenType::TokenEqual),
+            '!' => return self.make_token(TokenType::TokenBang),
+            '#' => return self.make_token(TokenType::TokenPound),
             _ => return self.error("Invalid character"),
         };
     }
@@ -69,10 +83,21 @@ impl Lexer {
             let mut literal = "";
             
             match token_type {
-                TokenType::TokenProc => literal = "proc",
+                TokenType::TokenLeftParen => literal = "left_paren",
+                TokenType::TokenRightParen => literal = "right_paren",
+                TokenType::TokenLeftBrace => literal = "left_brace",
+                TokenType::TokenRightBrace => literal = "right_brace",
+                TokenType::TokenLeftBracket => literal = "left_bracket",
+                TokenType::TokenRightBracket => literal = "right_bracket",
+                TokenType::TokenPlus => literal = "plus",
+                TokenType::TokenMinus => literal = "minus",
+                TokenType::TokenStar => literal = "star",
+                TokenType::TokenSlash => literal = "slash",
+                TokenType::TokenEqual => literal = "equal",
+                TokenType::TokenBang => literal = "bang",
+                TokenType::TokenPound => literal = "pound",
                 TokenType::TokenError => literal = "error",
                 TokenType::TokenEof => literal = "eof",
-                TokenType::TokenLeftParen => literal = "left_paren",
                 _ => literal = "error",
             }
     

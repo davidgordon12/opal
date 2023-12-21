@@ -3,6 +3,7 @@ pub enum TokenType {
     // Single-character tokens.
     TokenLeftParen, TokenRightParen,
     TokenLeftBrace, TokenRightBrace,
+    TokenLeftBracket, TokenRightBracket,
     TokenComma, TokenDot, TokenMinus, TokenPlus,
     TokenSemicolon, TokenSlash, TokenStar, TokenPound,
     
