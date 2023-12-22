@@ -15,6 +15,26 @@ impl Parser {
         }
     }
 
+    pub fn create_ast(&mut self) -> Program {
+        let mut program: Program = Program::new();
+
+        for t in self.tokens.clone() {
+            if t.token_type == TokenType::TokenEof 
+                || t.token_type == TokenType::TokenError
+            {
+                break;
+            }
+
+            let statement: Stmt = self.parse_statment();
+            match statement {
+                Stmt::Expr(Expr::ParseErr) => break,
+                _ => program.body.push(statement),
+            }
+        }
+
+        program
+    }
+
     fn get_token(&self, index: usize) -> &Token {
         &self.tokens[index]
     }
@@ -35,25 +55,6 @@ impl Parser {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
             _ => parse_error("Failed to parse token", &token),
         }
-    }
-
-    pub fn create_ast(&mut self) -> Program {
-        let mut program: Program = Program::new();
-
-        for t in self.tokens.clone() {
-            if t.token_type == TokenType::TokenEof 
-                || t.token_type == TokenType::TokenError
-            {
-                break;
-            }
-
-            match self.parse_statment() {
-                Stmt::Expr(Expr::ParseErr) => break,
-                _ => continue
-            }
-        }
-
-        program
     }
 }
 

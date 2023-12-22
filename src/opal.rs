@@ -4,6 +4,7 @@ use std::fs;
 use crate::tokens::Token;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
+use crate::ast::Program;
 use crate::compiler::Compiler;
 
 fn read_file(path: String) -> String {
@@ -18,7 +19,7 @@ pub fn opalc(files: VecDeque<String>) {
         let tokens: Vec<Token> = lexer.tokenize();
 
         let mut parser: Parser = Parser::new(tokens);
-        parser.create_ast();
+        let _tree: Program= parser.create_ast();
 
         let compiler: Compiler = Compiler {};
         compiler.run();   
