@@ -1,4 +1,3 @@
-use std::{error::Error, slice};
 use crate::tokens::*;
 
 pub struct Lexer {
@@ -56,6 +55,10 @@ impl Lexer {
             return self.read_number()
         }
 
+        if self.ch == '"' {
+            return self.read_string()
+        }
+
         match self.ch {
             '(' => return self.make_token(TokenType::TokenLeftParen),
             ')' => return self.make_token(TokenType::TokenRightParen),
@@ -63,8 +66,8 @@ impl Lexer {
             '}' => return self.make_token(TokenType::TokenRightBrace),
             '[' => return self.make_token(TokenType::TokenLeftBracket),
             ']' => return self.make_token(TokenType::TokenRightBracket),
+            '.' => return self.make_token(TokenType::TokenDot),
             ',' => return self.make_token(TokenType::TokenComma),
-            '"' => return self.make_token(TokenType::TokenString),
             ';' => return self.make_token(TokenType::TokenSemicolon),
             '+' => return self.make_token(TokenType::TokenPlus),
             '-' => return self.make_token(TokenType::TokenMinus),
@@ -76,9 +79,24 @@ impl Lexer {
                     false => return self.make_token(TokenType::TokenEqual),
                 };
             },
-            '!' => return self.make_token(TokenType::TokenBang),
-            '>' => return self.make_token(TokenType::TokenGreater),
-            '<' => return self.make_token(TokenType::TokenLess),
+            '!' => {
+                match self.next_char('=') {
+                    true => return self.make_token(TokenType::TokenBangEqual),
+                    false => return self.make_token(TokenType::TokenBang),
+                }
+            },
+            '>' => {
+                match self.next_char('=') {
+                    true => return self.make_token(TokenType::TokenGreaterEqual),
+                    false => return self.make_token(TokenType::TokenGreater),
+                }
+            },
+            '<' => {
+                match self.next_char('=') {
+                    true => return self.make_token(TokenType::TokenLessEqual),
+                    false => return self.make_token(TokenType::TokenLess),
+                }
+            },
             '#' => return self.make_token(TokenType::TokenPound),
             _ => return self.error("Invalid character"),
         };
@@ -91,46 +109,52 @@ impl Lexer {
     }
     
     fn make_token(&mut self, token_type: TokenType) -> Token {
-        let mut literal = "";            
+        let mut _literal = "";            
 
         match token_type {
-            TokenType::TokenLeftParen => literal = "left_paren",
-            TokenType::TokenRightParen => literal = "right_paren",
-            TokenType::TokenLeftBrace => literal = "left_brace",
-            TokenType::TokenRightBrace => literal = "right_brace",
-            TokenType::TokenLeftBracket => literal = "left_bracket",
-            TokenType::TokenRightBracket => literal = "right_bracket",
-            TokenType::TokenComma => literal = "comma",
-            TokenType::TokenSemicolon => literal = "semicolon",
-            TokenType::TokenPlus => literal = "plus",
-            TokenType::TokenMinus => literal = "minus",
-            TokenType::TokenStar => literal = "star",
-            TokenType::TokenSlash => literal = "slash",
-            TokenType::TokenEqual => literal = "equal",
-            TokenType::TokenBang => literal = "bang",
-            TokenType::TokenPound => literal = "pound",
-            TokenType::TokenEqualEqual => literal = "equal_equal",
-            TokenType::TokenAnd => literal = "and",
-            TokenType::TokenProc => literal = "proc",
-            TokenType::TokenIf => literal = "if",
-            TokenType::TokenElse => literal = "else",
-            TokenType::TokenOr => literal = "or",
-            TokenType::TokenFor => literal = "for",
-            TokenType::TokenTrue => literal = "true",
-            TokenType::TokenFalse => literal = "false",
-            TokenType::TokenLet => literal = "let",
-            TokenType::TokenNone => literal = "none",
-            TokenType::TokenNot => literal = "not",
-            TokenType::TokenReturn => literal = "return",
-            TokenType::TokenError => literal = "error",
-            TokenType::TokenEof => literal = "eof",
-            _ => literal = "error",            
+            TokenType::TokenLeftParen => _literal = "left_paren",
+            TokenType::TokenRightParen => _literal = "right_paren",
+            TokenType::TokenLeftBrace => _literal = "left_brace",
+            TokenType::TokenRightBrace => _literal = "right_brace",
+            TokenType::TokenLeftBracket => _literal = "left_bracket",
+            TokenType::TokenRightBracket => _literal = "right_bracket",
+            TokenType::TokenDot => _literal = "dot",
+            TokenType::TokenComma => _literal = "comma",
+            TokenType::TokenSemicolon => _literal = "semicolon",
+            TokenType::TokenPlus => _literal = "plus",
+            TokenType::TokenMinus => _literal = "minus",
+            TokenType::TokenStar => _literal = "star",
+            TokenType::TokenSlash => _literal = "slash",
+            TokenType::TokenPound => _literal = "pound",
+            TokenType::TokenEqual => _literal = "equal",
+            TokenType::TokenEqualEqual => _literal = "equal_equal",
+            TokenType::TokenBang => _literal = "bang",
+            TokenType::TokenBangEqual => _literal = "bang_equal",
+            TokenType::TokenLess => _literal = "less",
+            TokenType::TokenLessEqual => _literal = "less_equal",
+            TokenType::TokenGreater => _literal = "greater",
+            TokenType::TokenGreaterEqual => _literal = "greater_equal",
+            TokenType::TokenAnd => _literal = "and",
+            TokenType::TokenProc => _literal = "proc",
+            TokenType::TokenIf => _literal = "if",
+            TokenType::TokenElse => _literal = "else",
+            TokenType::TokenOr => _literal = "or",
+            TokenType::TokenFor => _literal = "for",
+            TokenType::TokenTrue => _literal = "true",
+            TokenType::TokenFalse => _literal = "false",
+            TokenType::TokenLet => _literal = "let",
+            TokenType::TokenNone => _literal = "none",
+            TokenType::TokenNot => _literal = "not",
+            TokenType::TokenReturn => _literal = "return",
+            TokenType::TokenError => _literal = "error",
+            TokenType::TokenEof => _literal = "eof",
+            _ => _literal = "error",            
         }
 
         Token {
             token_type: token_type,
             line: self.line,
-            literal: literal.to_string(),
+            literal: String::from(_literal),
         }
     }
     
@@ -199,6 +223,32 @@ impl Lexer {
             line: self.line,
             literal: ident,
             token_type: TokenType::TokenNumber,
+        }
+    }
+
+    fn read_string(&mut self) -> Token {
+        // Eat the first quotation mark
+        self.read_char();
+
+        self.start = self.current - 1;
+        
+        while self.peek() != '"' {
+            self.read_char();
+        }
+
+        // Eat the last quotation mark
+        self.read_char();
+
+        let ident: String = self.source
+            .chars()
+            .skip(self.start as usize)
+            .take(((self.current-self.start) - 1) as usize)
+            .collect();
+
+        Token {
+            line: self.line,
+            literal: ident,
+            token_type: TokenType::TokenString,
         }
     }
     

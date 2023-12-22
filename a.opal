@@ -4,8 +4,13 @@ FOR
 test string lol hahahaha
 +
 -
+>
+<
+<=
+>=
 ==
-==
+!=
+!
 {}
 []()
-==
+"baaa"
