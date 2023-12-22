@@ -3,10 +3,12 @@ use std::path::Path;
 
 use opal::opalc;
 
-mod compiler;
-mod lexer;
-mod tokens;
 mod opal;
+mod tokens;
+mod lexer;
+mod parser;
+mod ast;
+mod compiler;
 
 fn error(message: &str, file: &str) {
     println!("Opal: \x1b[91mFatal Error\x1b[0m");
