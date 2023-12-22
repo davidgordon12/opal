@@ -1,4 +1,7 @@
-balls
+word
+identifier
+testword
+let
 6567
 FOR
 test string lol hahahaha

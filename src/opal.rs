@@ -17,7 +17,8 @@ pub fn opalc(files: VecDeque<String>) {
         let mut lexer: Lexer = Lexer::new(source);
         let tokens: Vec<Token> = lexer.tokenize();
 
-        let parser: Parser = Parser::new(tokens);
+        let mut parser: Parser = Parser::new(tokens);
+        parser.create_ast();
 
         let compiler: Compiler = Compiler {};
         compiler.run();   
