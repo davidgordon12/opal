@@ -13,7 +13,8 @@ fn read_file(path: String) -> String {
 
 pub fn opalc(files: VecDeque<String>) {
     for x in files {
-        let source: String = read_file(x);
+        let mut source: String = read_file(x);
+        source.push('\0');
 
         let mut lexer: Lexer = Lexer::new(source);
         let tokens: Vec<Token> = lexer.tokenize();

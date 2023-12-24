@@ -1,4 +1,5 @@
 use crate::tokens::*;
+use crate::error::error;
 
 pub struct Lexer {
     source: String,
@@ -6,7 +7,6 @@ pub struct Lexer {
     current: i32,
     start: i32,
     ch: char,
-    error: bool,
 }
 
 impl Lexer {
@@ -17,7 +17,6 @@ impl Lexer {
             current: 0,
             start: 0,
             ch: '0',
-            error: false,
         }
     }
 
@@ -46,7 +45,7 @@ impl Lexer {
         }
 
         self.read_char();
-
+        
         if self.ch.is_alphabetic() {
             return self.read_ident()
         }
@@ -54,6 +53,7 @@ impl Lexer {
         if self.ch.is_numeric() {
             return self.read_number()
         }
+
 
         if self.ch == '"' {
             return self.read_string()
@@ -98,8 +98,10 @@ impl Lexer {
                 }
             },
             '#' => return self.make_token(TokenType::TokenPound),
-            _ => return self.error("Invalid character"),
+            _ => error("Invalid character", None, None),
         };
+
+        unreachable!()
     }
     
     fn read_char(&mut self) {
@@ -107,7 +109,7 @@ impl Lexer {
         self.ch = self.source.as_bytes()[index] as char;
         self.current += 1;
     }
-    
+
     fn make_token(&mut self, token_type: TokenType) -> Token {
         let mut _literal = "";            
 
@@ -209,6 +211,7 @@ impl Lexer {
     
     fn read_number(&mut self) -> Token {
         self.start = self.current - 1;
+
         while self.ch.is_numeric() || self.ch == '.' {
             self.read_char();
         }
@@ -273,12 +276,5 @@ impl Lexer {
 
     fn eof(&self) -> bool {
         self.ch == '\0' || self.current == self.source.len() as i32
-    }
-
-    fn error(&mut self, message: &str) -> Token {
-        println!("Opal: \x1b[91mSyntax Error\x1b[0m");
-        println!("{} on line: \x1b[93m{}\x1b[0m", message, self.line);
-        self.error = true;
-        self.make_token(TokenType::TokenError)
     }
 }

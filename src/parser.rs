@@ -66,7 +66,9 @@ impl Parser {
     }
 
     fn parse_additive_expression(&mut self) -> Expr {
-        let mut bExpr = vec![];
+        // This is an expensive operation but it is a workaround for
+        // initializing an empty BinaryExpr.
+        let mut b_expr = vec![];
         let left = self.parse_primary_expression();
         
         while self.peek(0).literal == "plus"
@@ -74,12 +76,12 @@ impl Parser {
         {
             let operator_token = self.get_token(self.index as usize);
             let right = self.parse_primary_expression();
-            bExpr[0] = BinaryExpr::new(Box::new(left.clone()), 
+            b_expr[0] = BinaryExpr::new(Box::new(left.clone()), 
                 Box::new(right.clone()), 
                 operator_token.literal);
         }
 
-        Expr::BinaryExpr(bExpr[0].clone())
+        Expr::BinaryExpr(b_expr[0].clone())
     }
 
     fn parse_primary_expression(&mut self) -> Expr {
