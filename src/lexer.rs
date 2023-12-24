@@ -209,7 +209,7 @@ impl Lexer {
     
     fn read_number(&mut self) -> Token {
         self.start = self.current - 1;
-        while self.ch.is_numeric() {
+        while self.ch.is_numeric() || self.ch == '.' {
             self.read_char();
         }
 
