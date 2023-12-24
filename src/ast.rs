@@ -7,11 +7,6 @@ pub enum NodeType {
 }
 
 #[derive(Debug, Clone)]
-pub enum Stmt {
-    Expr(Expr),
-}
-
-#[derive(Debug, Clone)]
 pub enum Expr {
     Number(Number),
     Identifier(Identifier),
@@ -22,9 +17,20 @@ pub enum Expr {
 #[derive(Debug, Clone)]
 pub struct BinaryExpr {
     pub kind: NodeType,
-    pub left: NodeType,
-    pub rigth: NodeType,
-    pub operator: char,
+    pub left: Box<Expr>,
+    pub right: Box<Expr>,
+    pub operator: String,
+}
+
+impl BinaryExpr {
+    pub fn new(left: Box<Expr>, right: Box<Expr>, operator: String) -> Self {
+        BinaryExpr {
+            kind: NodeType::BinaryExpr,
+            left: left,
+            right: right,
+            operator: operator,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -45,13 +51,22 @@ impl Identifier {
 #[derive(Debug, Clone)]
 pub struct Number {
     pub kind: NodeType,
-    pub value: i32,
+    pub value: f32,
+}
+
+impl Number {
+    pub fn new(value: f32) -> Self {
+        Number {
+            kind: NodeType::Number,
+            value: value,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct Program {
     pub kind: NodeType,
-    pub body: Vec<Stmt>,
+    pub body: Vec<Expr>,
 }
 
 impl Program {
