@@ -90,7 +90,7 @@ impl Parser {
         match token.token_type {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
             TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f32>().unwrap())),
-            _ => error("Failed to parse token", None, Some(&token.literal)),
+            _ => error("Failed to parse token", None, None, Some(&token.literal)),
         }
 
         unreachable!()
