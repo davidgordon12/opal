@@ -2,7 +2,9 @@ use std::{env, collections::VecDeque};
 use std::path::Path;
 
 use opal::opalc;
+use error::error;
 
+mod error;
 mod opal;
 mod tokens;
 mod lexer;
@@ -10,16 +12,11 @@ mod parser;
 mod ast;
 mod compiler;
 
-fn error(message: &str, file: &str) {
-    println!("Opal: \x1b[91mFatal Error\x1b[0m");
-    println!("{}: \x1b[93m{}\x1b[0m", message, file);
-}
-
 fn main() {
     let mut args: VecDeque<String> = env::args().collect();
 
     if args.len() == 1 {
-        error("No input files provided", "");
+        error("No input files provided", None, None);
         return
     }
 
@@ -35,19 +32,19 @@ fn main() {
         // This will fail if a file has multiple '.'s, but we will choose not to support that for the time being
         if let Some(idx) = x.find('.') {
             if x.split_at(idx).1 != ".opal" { 
-                error("Invalid file type", &x);
+                error("Invalid file type", Some(&x), None);
                 return
             }
         } else {
             // If the path doesn't contain a . at all then report it
-            error("Invalid file type", &x);
+            error("Invalid file type", Some(&x), None);
             return
         }
     }
 
     for x in &args {
         if !Path::new(&x).exists() {
-            error("File does not exist", &x);
+            error("File does not exist", Some(&x), None);
             return;
         }
     }
