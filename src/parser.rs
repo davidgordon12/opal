@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::error;
 use crate::tokens::*;
 use crate::ast::*;
 
@@ -25,41 +25,72 @@ impl Parser {
                 break;
             }
 
-            let statement: Stmt = self.parse_statment();
-            match statement {
-                Stmt::Expr(Expr::ParseErr) => break,
-                _ => program.body.push(statement),
+            let expression: Expr = self.parse_statment();
+            match expression {
+                Expr::ParseErr => break,
+                _ => program.body.push(expression),
             }
         }
 
         program
     }
 
-    fn get_token(&self, index: usize) -> &Token {
-        &self.tokens[index]
+    fn get_token(&mut self, index: usize) -> Token {
+        let token: Token = self.tokens[index].clone();
+        self.index += 1;
+        token
     }
 
-    fn parse_statment(&mut self) -> Stmt {
-        Stmt::Expr(self.parse_expression())
+    fn peek(&mut self, index: usize) -> Token {
+        self.tokens[index].clone()
     }
+
+    fn parse_statment(&mut self) -> Expr {
+        self.parse_expression()
+    }
+
+    /* PRECEDENCE
+        Assignment,
+        Member,
+        Function,
+        Logical,
+        Comparison,
+        Primary,
+        Unary,
+        Multiplication,
+        Additive,
+    */
 
     fn parse_expression(&mut self) -> Expr {
         self.parse_primary_expression()
     }
 
+    fn parse_additive_expression(&mut self) -> Expr {
+        let mut bExpr = vec![];
+        let left = self.parse_primary_expression();
+        
+        while self.peek(0).literal == "plus"
+            || self.peek(0).literal == "minus"
+        {
+            let operator_token = self.get_token(self.index as usize);
+            let right = self.parse_primary_expression();
+            bExpr[0] = BinaryExpr::new(Box::new(left.clone()), 
+                Box::new(right.clone()), 
+                operator_token.literal);
+        }
+
+        Expr::BinaryExpr(bExpr[0].clone())
+    }
+
     fn parse_primary_expression(&mut self) -> Expr {
         let token: Token = self.get_token(self.index as usize).clone();
-        self.index += 1;
 
         match token.token_type {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
-            _ => parse_error("Failed to parse token", &token),
+            TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f32>().unwrap())),
+            _ => error("Failed to parse token", None, Some(&token.literal)),
         }
-    }
-}
 
-fn parse_error(message: &str, token: &Token) -> Expr {
-    println!("Opal: \x1b[91mFatal Error\x1b[0m");
-    println!("{}: \x1b[93m{}\x1b[0m", message, token.literal);
-    Expr::ParseErr
+        unreachable!()
+    }
 }
