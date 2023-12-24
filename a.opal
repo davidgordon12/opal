@@ -1,8 +1,9 @@
 word
 identifier
 testword
-let
 6567
+12.34
+let
 FOR
 test string lol hahahaha
 +
