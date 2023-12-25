@@ -11,7 +11,6 @@ pub enum Expr {
     Number(Number),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
-    ParseErr,
 }
 
 #[derive(Debug, Clone)]
