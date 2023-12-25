@@ -54,7 +54,6 @@ impl Lexer {
             return self.read_number()
         }
 
-
         if self.ch == '"' {
             return self.read_string()
         }
@@ -73,6 +72,7 @@ impl Lexer {
             '-' => return self.make_token(TokenType::TokenMinus),
             '*' => return self.make_token(TokenType::TokenStar),
             '/' => return self.make_token(TokenType::TokenSlash),
+            '^' => return self.make_token(TokenType::TokenPower),
             '=' => {
                 match self.next_char('=') {
                     true => return self.make_token(TokenType::TokenEqualEqual),
@@ -111,6 +111,7 @@ impl Lexer {
     }
 
     fn make_token(&mut self, token_type: TokenType) -> Token {
+        #[allow(unused_assignments)]
         let mut literal = "";            
 
         match token_type {
@@ -127,6 +128,7 @@ impl Lexer {
             TokenType::TokenMinus => literal = "minus",
             TokenType::TokenStar => literal = "star",
             TokenType::TokenSlash => literal = "slash",
+            TokenType::TokenPower => literal = "power",
             TokenType::TokenPound => literal = "pound",
             TokenType::TokenEqual => literal = "equal",
             TokenType::TokenEqualEqual => literal = "equal_equal",

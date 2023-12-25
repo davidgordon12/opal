@@ -4,7 +4,7 @@ pub enum TokenType {
     TokenLeftParen, TokenRightParen,
     TokenLeftBrace, TokenRightBrace,
     TokenLeftBracket, TokenRightBracket,
-    TokenComma, TokenDot, TokenMinus, TokenPlus,
+    TokenComma, TokenDot, TokenMinus, TokenPlus, TokenPower,
     TokenSemicolon, TokenSlash, TokenStar, TokenPound,
     
     // One or two character tokens.
