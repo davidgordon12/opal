@@ -58,10 +58,27 @@ impl Parser {
     }
 
     fn parse_additive_expression(&mut self) -> Expr {
-        let mut left = self.parse_primary_expression();
+        let mut left = self.parse_multiplicative_expression();
         
         while self.peek().literal == "plus"
             || self.peek().literal == "minus"
+        {
+            let operator_token = self.get_token();
+            let right = self.parse_multiplicative_expression();
+            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
+                Box::new(right.clone()), 
+                operator_token.literal));
+        }
+    
+        left
+    }
+
+    fn parse_multiplicative_expression(&mut self) -> Expr {
+        let mut left = self.parse_primary_expression();
+        
+        while self.peek().literal == "star"
+            || self.peek().literal == "slash"
+            || self.peek().literal == "modulo"
         {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();

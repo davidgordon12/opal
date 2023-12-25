@@ -5,7 +5,7 @@ pub enum TokenType {
     TokenLeftBrace, TokenRightBrace,
     TokenLeftBracket, TokenRightBracket,
     TokenComma, TokenDot, TokenMinus, TokenPlus, TokenPower,
-    TokenSemicolon, TokenSlash, TokenStar, TokenPound,
+    TokenSemicolon, TokenSlash, TokenStar, TokenPound, TokenModulo,
     
     // One or two character tokens.
     TokenBang, TokenBangEqual,
@@ -21,7 +21,7 @@ pub enum TokenType {
     TokenFor, TokenProc, TokenIf, TokenNone, TokenOr,
     TokenReturn, TokenTrue, TokenLet, TokenNot,
     
-    TokenError, TokenEof,
+    TokenEof,
 }
 
 #[derive(Debug, Clone)]

@@ -16,24 +16,18 @@ impl Lexer {
             line: 1,
             current: 0,
             start: 0,
-            ch: '0',
+            ch: ' ',
         }
     }
 
     pub fn tokenize(&mut self) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
 
-        loop {
-            let token: Token = self.next_token();
-            tokens.push(token.clone());
+        while !self.eof() {
+            tokens.push(self.next_token())
+        }
 
-            if token.token_type == TokenType::TokenEof || 
-                token.token_type == TokenType::TokenError 
-            { 
-                break;
-            }
-        } 
-
+        tokens.push(self.make_token(TokenType::TokenEof));
         tokens
     }
 
@@ -73,6 +67,7 @@ impl Lexer {
             '*' => return self.make_token(TokenType::TokenStar),
             '/' => return self.make_token(TokenType::TokenSlash),
             '^' => return self.make_token(TokenType::TokenPower),
+            '%' => return self.make_token(TokenType::TokenModulo),
             '=' => {
                 match self.next_char('=') {
                     true => return self.make_token(TokenType::TokenEqualEqual),
@@ -129,6 +124,7 @@ impl Lexer {
             TokenType::TokenStar => literal = "star",
             TokenType::TokenSlash => literal = "slash",
             TokenType::TokenPower => literal = "power",
+            TokenType::TokenModulo => literal = "modulo",
             TokenType::TokenPound => literal = "pound",
             TokenType::TokenEqual => literal = "equal",
             TokenType::TokenEqualEqual => literal = "equal_equal",
@@ -150,7 +146,6 @@ impl Lexer {
             TokenType::TokenNone => literal = "none",
             TokenType::TokenNot => literal = "not",
             TokenType::TokenReturn => literal = "return",
-            TokenType::TokenError => literal = "error",
             TokenType::TokenEof => literal = "eof",
             _ => literal = "error",            
         }
