@@ -1,16 +1,16 @@
+use std::collections::VecDeque;
+
 use crate::error::error;
 use crate::tokens::*;
 use crate::ast::*;
 
 pub struct Parser {
-    index: i32,
-    tokens: Vec<Token>,
+    tokens: VecDeque<Token>,
 }
 
 impl Parser {
-    pub fn new(tokens: Vec<Token>) -> Parser {
+    pub fn new(tokens: VecDeque<Token>) -> Parser {
         Parser {
-            index: 0,
             tokens: tokens,
         }
     }
@@ -18,31 +18,23 @@ impl Parser {
     pub fn create_ast(&mut self) -> Program {
         let mut program: Program = Program::new();
 
-        for t in self.tokens.clone() {
-            if t.token_type == TokenType::TokenEof 
-                || t.token_type == TokenType::TokenError
-            {
-                break;
-            }
-
-            let expression: Expr = self.parse_statment();
-            match expression {
-                Expr::ParseErr => break,
-                _ => program.body.push(expression),
-            }
+        while !self.eof() {
+            program.body.push(self.parse_statment());
         }
 
         program
     }
 
-    fn get_token(&mut self, index: usize) -> Token {
-        let token: Token = self.tokens[index].clone();
-        self.index += 1;
-        token
+    fn eof(&mut self) -> bool {
+        self.tokens[0].token_type == TokenType::TokenEof
     }
 
-    fn peek(&mut self, index: usize) -> Token {
-        self.tokens[index].clone()
+    fn get_token(&mut self) -> Token {
+        self.tokens.pop_front().unwrap()
+    }
+
+    fn peek(&mut self) -> Token {
+        self.tokens[0].clone()
     }
 
     fn parse_statment(&mut self) -> Expr {
@@ -62,30 +54,27 @@ impl Parser {
     */
 
     fn parse_expression(&mut self) -> Expr {
-        self.parse_primary_expression()
+        self.parse_additive_expression()
     }
 
     fn parse_additive_expression(&mut self) -> Expr {
-        // This is an expensive operation but it is a workaround for
-        // initializing an empty BinaryExpr.
-        let mut b_expr = vec![];
-        let left = self.parse_primary_expression();
+        let mut left = self.parse_primary_expression();
         
-        while self.peek(0).literal == "plus"
-            || self.peek(0).literal == "minus"
+        while self.peek().literal == "plus"
+            || self.peek().literal == "minus"
         {
-            let operator_token = self.get_token(self.index as usize);
+            let operator_token = self.get_token();
             let right = self.parse_primary_expression();
-            b_expr[0] = BinaryExpr::new(Box::new(left.clone()), 
+            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
                 Box::new(right.clone()), 
-                operator_token.literal);
+                operator_token.literal));
         }
-
-        Expr::BinaryExpr(b_expr[0].clone())
+    
+        left
     }
 
     fn parse_primary_expression(&mut self) -> Expr {
-        let token: Token = self.get_token(self.index as usize).clone();
+        let token: Token = self.get_token().clone();
 
         match token.token_type {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),

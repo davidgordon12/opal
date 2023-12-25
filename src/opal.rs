@@ -23,7 +23,7 @@ pub fn opalc(files: VecDeque<String>) {
             println!("{} | {:#?} | {}", &x.literal, &x.token_type, &x.line)
         }
 
-        let mut parser: Parser = Parser::new(tokens);
+        let mut parser: Parser = Parser::new(tokens.into());
         let tree: Program = parser.create_ast();
 
         println!("{:#?}", tree);
