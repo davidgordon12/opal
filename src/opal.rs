@@ -24,11 +24,11 @@ pub fn opalc(files: VecDeque<String>) {
         }
 */
         let mut parser: Parser = Parser::new(tokens.into());
-        let _tree: Program = parser.create_ast();
+        let program: Program = parser.create_ast();
 
-        //println!("{:#?}", tree);
+        //println!("{:#?}", program);
 
-        let compiler: Compiler = Compiler {};
+        let compiler: Compiler = Compiler::new(program);
         compiler.run();   
     }
 }
