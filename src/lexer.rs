@@ -1,5 +1,5 @@
 use crate::tokens::*;
-use crate::error::error;
+use crate::error::{parse_token_error, error, operation_error};
 
 pub struct Lexer {
     source: String,
@@ -93,7 +93,19 @@ impl Lexer {
                 }
             },
             '#' => return self.make_token(TokenType::TokenPound),
-            _ => error("Invalid character on line", Some(&self.line.to_string())),
+            '&' => {
+                match self.next_char('&') {
+                    true => return self.make_token(TokenType::TokenAnd),
+                    false => operation_error("Invalid AND operation. Use && instead.", &self.line.to_string()),
+                }
+            }
+            '|' => {
+                match self.next_char('|') {
+                    true => return self.make_token(TokenType::TokenOr),
+                    false => operation_error("Invalid OR operation. Use || instead.", &self.line.to_string()),
+                }
+            }
+            _ => parse_token_error("Invalid character", &self.ch.to_string(), &self.line.to_string()),
         };
 
         unreachable!()
@@ -110,35 +122,35 @@ impl Lexer {
         let mut literal = "";            
 
         match token_type {
-            TokenType::TokenLeftParen => literal = "left_paren",
-            TokenType::TokenRightParen => literal = "right_paren",
-            TokenType::TokenLeftBrace => literal = "left_brace",
-            TokenType::TokenRightBrace => literal = "right_brace",
-            TokenType::TokenLeftBracket => literal = "left_bracket",
-            TokenType::TokenRightBracket => literal = "right_bracket",
-            TokenType::TokenDot => literal = "dot",
-            TokenType::TokenComma => literal = "comma",
-            TokenType::TokenSemicolon => literal = "semicolon",
-            TokenType::TokenPlus => literal = "plus",
-            TokenType::TokenMinus => literal = "minus",
-            TokenType::TokenStar => literal = "star",
-            TokenType::TokenSlash => literal = "slash",
-            TokenType::TokenPower => literal = "power",
-            TokenType::TokenModulo => literal = "modulo",
-            TokenType::TokenPound => literal = "pound",
-            TokenType::TokenEqual => literal = "equal",
-            TokenType::TokenEqualEqual => literal = "equal_equal",
-            TokenType::TokenBang => literal = "bang",
-            TokenType::TokenBangEqual => literal = "bang_equal",
-            TokenType::TokenLess => literal = "less",
-            TokenType::TokenLessEqual => literal = "less_equal",
-            TokenType::TokenGreater => literal = "greater",
-            TokenType::TokenGreaterEqual => literal = "greater_equal",
-            TokenType::TokenAnd => literal = "and",
+            TokenType::TokenLeftParen => literal = "(",
+            TokenType::TokenRightParen => literal = ")",
+            TokenType::TokenLeftBrace => literal = "{",
+            TokenType::TokenRightBrace => literal = "}",
+            TokenType::TokenLeftBracket => literal = "[",
+            TokenType::TokenRightBracket => literal = "]",
+            TokenType::TokenDot => literal = ".",
+            TokenType::TokenComma => literal = ",",
+            TokenType::TokenSemicolon => literal = ";",
+            TokenType::TokenPlus => literal = "+",
+            TokenType::TokenMinus => literal = "-",
+            TokenType::TokenStar => literal = "*",
+            TokenType::TokenSlash => literal = "/",
+            TokenType::TokenPower => literal = "^",
+            TokenType::TokenModulo => literal = "%",
+            TokenType::TokenPound => literal = "#",
+            TokenType::TokenEqual => literal = "=",
+            TokenType::TokenEqualEqual => literal = "==",
+            TokenType::TokenBang => literal = "!",
+            TokenType::TokenBangEqual => literal = "!=",
+            TokenType::TokenLess => literal = "<",
+            TokenType::TokenLessEqual => literal = "<=",
+            TokenType::TokenGreater => literal = ">",
+            TokenType::TokenGreaterEqual => literal = ">=",
+            TokenType::TokenAnd => literal = "&&",
+            TokenType::TokenOr => literal = "||",
             TokenType::TokenProc => literal = "proc",
             TokenType::TokenIf => literal = "if",
             TokenType::TokenElse => literal = "else",
-            TokenType::TokenOr => literal = "or",
             TokenType::TokenFor => literal = "for",
             TokenType::TokenTrue => literal = "true",
             TokenType::TokenFalse => literal = "false",
