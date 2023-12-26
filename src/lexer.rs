@@ -16,7 +16,7 @@ impl Lexer {
             line: 1,
             current: 0,
             start: 0,
-            ch: ' ',
+            ch: '0',
         }
     }
 
@@ -182,14 +182,14 @@ impl Lexer {
     
     fn read_ident(&mut self) -> Token {
         self.start = self.current - 1;
-        while self.ch.is_alphabetic() {
+        while self.peek().is_alphabetic() {
             self.read_char();
         }
 
         let ident: String = self.source
             .chars()
             .skip(self.start as usize)
-            .take(((self.current-self.start) - 1) as usize)
+            .take((self.current-self.start) as usize)
             .collect();
 
     
@@ -209,14 +209,14 @@ impl Lexer {
     fn read_number(&mut self) -> Token {
         self.start = self.current - 1;
 
-        while self.ch.is_numeric() || self.ch == '.' {
+        while self.peek().is_numeric() || self.peek() == '.' {
             self.read_char();
         }
 
         let ident: String = self.source
             .chars()
             .skip(self.start as usize)
-            .take(((self.current-self.start) - 1) as usize)
+            .take((self.current-self.start) as usize)
             .collect();
 
         Token {
