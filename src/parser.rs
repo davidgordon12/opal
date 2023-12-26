@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::error::error;
+use crate::error::parse_token_error;
 use crate::tokens::*;
 use crate::ast::*;
 
@@ -115,11 +116,11 @@ impl Parser {
                 let val = self.parse_expression();
                 let expected = self.get_token(); // Closing parenthesis
                 if expected.token_type != TokenType::TokenRightParen {
-                    error("Unclosed parenthesis", Some(&expected.line.to_string()))
+                    error("Unclosed parenthesis. '(' found on line", Some(&token.line.to_string()))
                 }
                 return val;
             },
-            _ => error("Failed to parse token", Some(&token.literal)),
+            _ => parse_token_error("Failed to parse token", &token.literal, &token.line.to_string()),
         }
 
         unreachable!()
