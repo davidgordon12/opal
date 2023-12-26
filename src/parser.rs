@@ -115,11 +115,11 @@ impl Parser {
                 let val = self.parse_expression();
                 let expected = self.get_token(); // Closing parenthesis
                 if expected.token_type != TokenType::TokenRightParen {
-                    error("Unclosed parenthesis", Some(&expected.line.to_string()), None, None)
+                    error("Unclosed parenthesis", Some(&expected.line.to_string()))
                 }
                 return val;
             },
-            _ => error("Failed to parse token", None, None, Some(&token.literal)),
+            _ => error("Failed to parse token", Some(&token.literal)),
         }
 
         unreachable!()

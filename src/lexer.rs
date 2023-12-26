@@ -93,7 +93,7 @@ impl Lexer {
                 }
             },
             '#' => return self.make_token(TokenType::TokenPound),
-            _ => error("Invalid character on line", Some(&self.line.to_string()), None, None),
+            _ => error("Invalid character on line", Some(&self.line.to_string())),
         };
 
         unreachable!()
