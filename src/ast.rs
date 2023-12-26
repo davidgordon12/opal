@@ -1,3 +1,5 @@
+use crate::error::error;
+
 #[derive(Debug, Clone)]
 pub enum NodeType {
     Program,
@@ -11,6 +13,35 @@ pub enum Expr {
     Number(Number),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
+}
+
+impl Expr {
+    pub fn unwrap_binary_expr(self) -> BinaryExpr {
+        match self {
+            Expr::BinaryExpr(x) => return x,
+            _ => error("Expeted binary expression.", None, None, None)
+        }
+
+        unreachable!()
+    }
+
+    pub fn unwrap_identifier(self) -> Identifier {
+        match self {
+            Expr::Identifier(x) => return x,
+            _ => error("Expeted identifier.", None, None, None)
+        }
+
+        unreachable!()
+    }
+
+    pub fn unwrap_number(self) -> Number {
+        match self {
+            Expr::Number(x) => return x,
+            _ => error("Expeted number.", None, None, None)
+        }
+
+        unreachable!()
+    }
 }
 
 #[derive(Debug, Clone)]
