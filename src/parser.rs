@@ -74,7 +74,7 @@ impl Parser {
     }
 
     fn parse_multiplicative_expression(&mut self) -> Expr {
-        let mut left = self.parse_primary_expression();
+        let mut left = self.parse_power_expression();
         
         while self.peek().literal == "star"
             || self.peek().literal == "slash"
@@ -90,12 +90,35 @@ impl Parser {
         left
     }
 
+    fn parse_power_expression(&mut self) -> Expr {
+        let mut left = self.parse_primary_expression();
+        
+        while self.peek().literal == "power"
+        {
+            let operator_token = self.get_token();
+            let right = self.parse_primary_expression();
+            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
+                Box::new(right.clone()), 
+                operator_token.literal));
+        }
+    
+        left
+    }
+
     fn parse_primary_expression(&mut self) -> Expr {
-        let token: Token = self.get_token().clone();
+        let token: Token = self.get_token();
 
         match token.token_type {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
             TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f32>().unwrap())),
+            TokenType::TokenLeftParen => {
+                let val = self.parse_expression();
+                let expected = self.get_token(); // Closing parenthesis
+                if expected.token_type != TokenType::TokenRightParen {
+                    error("Unclosed parenthesis", Some(&expected.line.to_string()), None, None)
+                }
+                return val;
+            },
             _ => error("Failed to parse token", None, None, Some(&token.literal)),
         }
 
