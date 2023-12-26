@@ -1,5 +1,5 @@
 use crate::tokens::*;
-use crate::error::{parse_token_error, error, operation_error};
+use crate::error::{parse_token_error, operation_error};
 
 pub struct Lexer {
     source: String,
