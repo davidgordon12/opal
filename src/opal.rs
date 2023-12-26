@@ -19,14 +19,14 @@ pub fn opalc(files: VecDeque<String>) {
         let mut lexer: Lexer = Lexer::new(source);
         let tokens: Vec<Token> = lexer.tokenize();
 
-        for x in &tokens {
+/*        for x in &tokens {
             println!("{} | {:#?} | {}", &x.literal, &x.token_type, &x.line)
         }
-
+*/
         let mut parser: Parser = Parser::new(tokens.into());
-        let tree: Program = parser.create_ast();
+        let _tree: Program = parser.create_ast();
 
-        println!("{:#?}", tree);
+        //println!("{:#?}", tree);
 
         let compiler: Compiler = Compiler {};
         compiler.run();   

@@ -61,8 +61,8 @@ impl Parser {
     fn parse_additive_expression(&mut self) -> Expr {
         let mut left = self.parse_multiplicative_expression();
         
-        while self.peek().literal == "plus"
-            || self.peek().literal == "minus"
+        while self.peek().token_type == TokenType::TokenPlus
+            || self.peek().token_type == TokenType::TokenMinus
         {
             let operator_token = self.get_token();
             let right = self.parse_multiplicative_expression();
@@ -77,9 +77,9 @@ impl Parser {
     fn parse_multiplicative_expression(&mut self) -> Expr {
         let mut left = self.parse_power_expression();
         
-        while self.peek().literal == "star"
-            || self.peek().literal == "slash"
-            || self.peek().literal == "modulo"
+        while self.peek().token_type == TokenType::TokenStar
+            || self.peek().token_type == TokenType::TokenSlash
+            || self.peek().token_type == TokenType::TokenModulo
         {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();
@@ -94,7 +94,7 @@ impl Parser {
     fn parse_power_expression(&mut self) -> Expr {
         let mut left = self.parse_primary_expression();
         
-        while self.peek().literal == "power"
+        while self.peek().token_type == TokenType::TokenPower
         {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();

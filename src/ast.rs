@@ -9,12 +9,28 @@ pub enum NodeType {
 }
 
 #[derive(Debug, Clone)]
+pub struct Program {
+    pub kind: NodeType,
+    pub body: Vec<Expr>,
+}
+
+impl Program {
+    pub fn new() -> Self {
+        Program {
+            kind: NodeType::Program,
+            body: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Expr {
     Number(Number),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
 }
 
+#[allow(dead_code)]
 impl Expr {
     pub fn unwrap_binary_expr(self) -> BinaryExpr {
         match self {
@@ -89,21 +105,6 @@ impl Number {
         Number {
             kind: NodeType::Number,
             value: value,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Program {
-    pub kind: NodeType,
-    pub body: Vec<Expr>,
-}
-
-impl Program {
-    pub fn new() -> Self {
-        Program {
-            kind: NodeType::Program,
-            body: Vec::new(),
         }
     }
 }
