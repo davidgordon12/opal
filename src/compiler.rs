@@ -1,4 +1,4 @@
-use std::{io::Write, fs::File, alloc::System, process::Command};
+use std::{io::Write, process::Command};
 
 use crate::{ast::Program, error::error};
 
@@ -25,7 +25,11 @@ global _start
 _start:"
         ).unwrap();
 
-        self.compile_binary_expr()
+        self.compile_binary_expr();
+
+        self.exit();
+
+        Command::new("make").output().unwrap();
     }
 
     fn compile_binary_expr(&self) {
@@ -38,15 +42,13 @@ _start:"
             '+' => self.add(lhs.value, rhs.value),      
             _ => error("Illegal operator", None),
         }
-
-
-        panic!()
     }
 
     fn add(&self, a: f32, b: f32) {
         let mut path = self.file.clone();
         path.push_str(".asm");
         let mut file = std::fs::File::options().write(true).append(true).open("tests/bin.opal.asm").unwrap();
+
         let mut arg: String = String::from("mov rax, ");
         arg.push_str(&a.to_string());
         file.write(b"\n        ").unwrap();
@@ -57,10 +59,25 @@ _start:"
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("add rax, rbx");
+        let arg: String = String::from("add rbx, rax");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+    }
+
+    fn exit(&self) {
+        let mut path = self.file.clone();
+        path.push_str(".asm");
+        let mut file = std::fs::File::options().write(true).append(true).open("tests/bin.opal.asm").unwrap();
+
+        file.write(b"\n        ").unwrap();
+
+        let arg: String = String::from("mov rax, 1");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        Command::new("make").output().unwrap();
+        let arg: String = String::from("int 80h");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
     }
+
 }
