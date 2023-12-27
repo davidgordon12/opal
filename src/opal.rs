@@ -13,7 +13,7 @@ fn read_file(path: String) -> String {
 
 pub fn opalc(files: VecDeque<String>) {
     for x in files {
-        let mut source: String = read_file(x);
+        let mut source: String = read_file(x.clone());
         source.push('\0');
 
         let mut lexer: Lexer = Lexer::new(source);
@@ -27,8 +27,7 @@ pub fn opalc(files: VecDeque<String>) {
         let program: Program = parser.create_ast();
 
         //println!("{:#?}", program);
-
-        let compiler: Compiler = Compiler::new(program);
+        let mut compiler: Compiler = Compiler::new(x.clone(), program);
         compiler.run();   
     }
 }
