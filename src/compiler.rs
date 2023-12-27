@@ -19,8 +19,8 @@ impl Compiler {
         let mut path = self.file.clone();
         path.push_str(".asm");
         let mut file = std::fs::File::create(path).unwrap();
-        file.write(b"SECTION .TEXT
-GLOBAL _start
+        file.write(b"section .text
+global _start
 
 _start:"
         ).unwrap();
