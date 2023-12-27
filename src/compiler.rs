@@ -75,7 +75,11 @@ _start:"
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("int 80h");
+        let arg: String = String::from("mov rbx, 0");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+
+        let arg: String = String::from("int 0x80");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
