@@ -1,4 +1,4 @@
-use std::{io::Write, fs::File};
+use std::{io::Write, fs::File, alloc::System, process::Command};
 
 use crate::{ast::Program, error::error};
 
@@ -47,22 +47,20 @@ _start:"
         let mut path = self.file.clone();
         path.push_str(".asm");
         let mut file = std::fs::File::options().write(true).append(true).open("tests/bin.opal.asm").unwrap();
-        let mut arg: String = String::from("mov eax, ");
+        let mut arg: String = String::from("mov rax, ");
         arg.push_str(&a.to_string());
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let mut arg: String = String::from("mov ebx, ");
+        let mut arg: String = String::from("mov rbx, ");
         arg.push_str(&b.to_string());
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("add eax, ebx");
+        let arg: String = String::from("add rax, rbx");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("ret eax");
-        file.write(b"\n        ").unwrap();
-        file.write(arg.as_bytes()).unwrap();
+        Command::new("make").output().unwrap();
     }
 }
