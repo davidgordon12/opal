@@ -44,7 +44,7 @@ _start:"
         }
     }
 
-    fn add(&self, a: f32, b: f32) {
+    fn add(&self, a: f64, b: f64) {
         let mut path = self.file.clone();
         path.push_str(".asm");
         let mut file = std::fs::File::options().write(true).append(true).open(path).unwrap();
@@ -62,6 +62,10 @@ _start:"
         let arg: String = String::from("add rbx, rax");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
+    }
+
+    fn multiply(&self, a: f64, b: f64) {
+        
     }
 
     fn exit(&self) {

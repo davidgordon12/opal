@@ -26,7 +26,7 @@ pub enum TokenType {
 
 #[derive(Debug, Clone)]
 pub struct Token {
-    pub line: i32,
+    pub line: i64,
     pub literal: String,
     pub token_type: TokenType,
 }
