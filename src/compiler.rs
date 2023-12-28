@@ -47,7 +47,7 @@ _start:"
     fn add(&self, a: f32, b: f32) {
         let mut path = self.file.clone();
         path.push_str(".asm");
-        let mut file = std::fs::File::options().write(true).append(true).open("tests/bin.opal.asm").unwrap();
+        let mut file = std::fs::File::options().write(true).append(true).open(path).unwrap();
 
         let mut arg: String = String::from("mov rax, ");
         arg.push_str(&a.to_string());
@@ -67,7 +67,7 @@ _start:"
     fn exit(&self) {
         let mut path = self.file.clone();
         path.push_str(".asm");
-        let mut file = std::fs::File::options().write(true).append(true).open("tests/bin.opal.asm").unwrap();
+        let mut file = std::fs::File::options().write(true).append(true).open(path).unwrap();
 
         file.write(b"\n        ").unwrap();
 
