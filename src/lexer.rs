@@ -3,9 +3,9 @@ use crate::error::{parse_token_error, operation_error};
 
 pub struct Lexer {
     source: String,
-    line: i32,
-    current: i32,
-    start: i32,
+    line: i64,
+    current: i64,
+    start: i64,
     ch: char,
 }
 
@@ -284,6 +284,6 @@ impl Lexer {
     }
 
     fn eof(&self) -> bool {
-        self.ch == '\0' || self.current == self.source.len() as i32
+        self.ch == '\0' || self.current == self.source.len() as i64
     }
 }

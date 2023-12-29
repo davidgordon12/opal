@@ -111,7 +111,7 @@ impl Parser {
 
         match token.token_type {
             TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
-            TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f32>().unwrap())),
+            TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f64>().unwrap())),
             TokenType::TokenLeftParen => {
                 let val = self.parse_expression();
                 let expected = self.get_token(); // Closing parenthesis

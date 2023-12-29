@@ -97,11 +97,11 @@ impl Identifier {
 #[derive(Debug, Clone)]
 pub struct Number {
     pub kind: NodeType,
-    pub value: f32,
+    pub value: f64,
 }
 
 impl Number {
-    pub fn new(value: f32) -> Self {
+    pub fn new(value: f64) -> Self {
         Number {
             kind: NodeType::Number,
             value: value,
