@@ -18,7 +18,7 @@ pub enum TokenType {
     
     // Keywords.
     TokenAnd, TokenElse, TokenFalse,
-    TokenFor, TokenProc, TokenIf, TokenNone, TokenOr,
+    TokenFor, TokenProc, TokenIf, TokenNull, TokenOr,
     TokenReturn, TokenTrue, TokenLet, TokenNot,
     
     TokenEof,
@@ -42,7 +42,7 @@ pub fn reserved_keyword(keyword: &str) -> TokenType {
         "true" => TokenType::TokenTrue,
         "false" => TokenType::TokenFalse,
         "let" => TokenType::TokenLet,
-        "none" => TokenType::TokenNone,
+        "null" => TokenType::TokenNull,
         "not" => TokenType::TokenNot,
         "return" => TokenType::TokenReturn,
         _ => TokenType::TokenIdentifier,

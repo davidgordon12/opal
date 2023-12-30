@@ -155,7 +155,7 @@ impl Lexer {
             TokenType::TokenTrue => literal = "true",
             TokenType::TokenFalse => literal = "false",
             TokenType::TokenLet => literal = "let",
-            TokenType::TokenNone => literal = "none",
+            TokenType::TokenNull => literal = "null",
             TokenType::TokenNot => literal = "not",
             TokenType::TokenReturn => literal = "return",
             TokenType::TokenEof => literal = "eof",

@@ -6,6 +6,7 @@ pub enum NodeType {
     Number,
     Identifier,
     BinaryExpr,
+    NullLiteral,
 }
 
 #[derive(Debug, Clone)]
@@ -28,6 +29,7 @@ pub enum Expr {
     Number(Number),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
+    NullLiteral(NullLiteral),
 }
 
 #[allow(dead_code)]
@@ -54,6 +56,15 @@ impl Expr {
         match self {
             Expr::Number(x) => return x,
             _ => error("Expeted number.", None),
+        }
+
+        unreachable!()
+    }
+
+    pub fn unwrap_null_literal(self) -> NullLiteral {
+        match self {
+            Expr::NullLiteral(x) => return x,
+            _ => error("Expected null literal.", None),
         }
 
         unreachable!()
@@ -105,6 +116,21 @@ impl Number {
         Number {
             kind: NodeType::Number,
             value: value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct NullLiteral {
+    pub kind: NodeType,
+    pub value: String,
+}
+
+impl NullLiteral {
+    pub fn new() -> Self {
+        NullLiteral {
+            kind: NodeType::NullLiteral,
+            value: String::from("null"),
         }
     }
 }
