@@ -13,7 +13,7 @@ A(n in-progress) handwritten Lexer, Parser and Compiler written in Rust.
 ## Build
 This project relies on Cargo to build. Please ensure you have it installed.
 ```bash
-cargo run <file.opal>
+cargo run <file1.opal> <file2.opal> ...
 ```
 
 ## Assembling and Linking
