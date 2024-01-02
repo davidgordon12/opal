@@ -207,6 +207,11 @@ impl Lexer {
     
         let token_type = reserved_keyword(&ident.to_lowercase());
 
+        if token_type == TokenType::TokenNull {
+            let literal: &'static str = "null";
+            parse_token_error("Null is not supported in opal", &literal, self.line.to_string().as_str());
+        }
+
         if token_type != TokenType::TokenIdentifier {
             return self.make_token(token_type)
         }
