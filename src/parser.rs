@@ -94,8 +94,7 @@ impl Parser {
     fn parse_power_expression(&mut self) -> Expr {
         let mut left = self.parse_primary_expression();
         
-        while self.peek().token_type == TokenType::TokenPower
-        {
+        while self.peek().token_type == TokenType::TokenPower {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();
             left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
