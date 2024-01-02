@@ -25,4 +25,4 @@ nasm -f elf64 <file.asm> -o <output.o>
 ld <output.o> -o <executable>
 ```
 
-You should now have an executable file in a 64bit ELF format.
+You should now have an executable file in a 64-bit ELF format.
