@@ -29,8 +29,10 @@ _start:"
     }
 
     pub fn run(&mut self) {
+        /* This method will walk the AST and compile the source code into NASM assembly for the x86_64 architecture */
         self.create_asm();
 
+        /* Walk the tree here and determine the compilation method for the specific node */
         self.compile_binary_expr();
 
         self.exit();
