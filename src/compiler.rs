@@ -2,7 +2,7 @@ use std::io::Write;
 use std::os::unix::process::CommandExt;
 use std::process::Command;
 
-use crate::ast::Program;
+use crate::ast::{Program, Expr, BinaryExpr};
 use crate::error::error;
 
 pub struct Compiler {
@@ -34,22 +34,36 @@ _start:"
         self.create_asm();
 
         /* Walk the tree here and determine the compilation method for the specific node */
-        self.compile_binary_expr();
-
+        for x in &self.program.body {
+            self.compile_binary_expr(x.clone().unwrap_binary_expr());
+        }
         self.exit();
     }
 
-    fn compile_binary_expr(&self) {
-        let expr = self.program.body[0].clone().unwrap_binary_expr();
+    fn compile_binary_expr(&self, expr: BinaryExpr) {
+        let mut lhs = 0.0;
+        let mut rhs = 0.0;
+
+        let left = expr.left;
+        match *left {
+            Expr::BinaryExpr(x) => self.compile_binary_expr(x), 
+            Expr::Number(x) => lhs = x.value,
+            _ => {},
+        }
+
+        let right = expr.right;
+        match *right {
+            Expr::BinaryExpr(x) => self.compile_binary_expr(x), 
+            Expr::Number(x) => rhs = x.value,
+            _ => {},
+        }
 
         let op = expr.operator.as_bytes()[0 as usize] as char;
-        let lhs = expr.left.unwrap_number();
-        let rhs = expr.right.unwrap_number();
         match &op {
-            '+' => self.add(lhs.value, rhs.value),      
-            '-' => self.subtract(lhs.value, rhs.value),      
-            '*' => self.multiply(lhs.value, rhs.value),      
-            '/' => self.divide(lhs.value, rhs.value),      
+            '+' => self.add(lhs, rhs),      
+            '-' => self.subtract(lhs, rhs),      
+            '*' => self.multiply(lhs, rhs),      
+            '/' => self.divide(lhs, rhs),      
             _ => error("Illegal operator", None),
         }
     }
