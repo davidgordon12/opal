@@ -1,4 +1,5 @@
 use std::io::Write;
+use std::os::unix::process::CommandExt;
 use std::process::Command;
 
 use crate::ast::Program;
@@ -36,8 +37,6 @@ _start:"
         self.compile_binary_expr();
 
         self.exit();
-
-        Command::new("make").output().unwrap();
     }
 
     fn compile_binary_expr(&self) {
@@ -144,5 +143,4 @@ _start:"
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
-
 }
