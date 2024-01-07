@@ -78,13 +78,26 @@ impl Compiler {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
         if **src == true {
-            file.write(b"\n        ").unwrap();
+            if a == 0.0 {
+                file.write(b"\n        ").unwrap();
 
-            let mut arg: String = String::from("add rax, ");
-            arg.push_str(&b.to_string());
+                let mut arg: String = String::from("add rax, ");
+                arg.push_str(&b.to_string());
 
-            file.write(b"\n        ").unwrap();
-            file.write(arg.as_bytes()).unwrap();
+                file.write(b"\n        ").unwrap();
+                file.write(arg.as_bytes()).unwrap();
+            }
+
+            if b == 0.0 {
+                file.write(b"\n        ").unwrap();
+
+                let mut arg: String = String::from("add rax, ");
+                arg.push_str(&a.to_string());
+
+                file.write(b"\n        ").unwrap();
+                file.write(arg.as_bytes()).unwrap();
+
+            }
         } else {
             let mut arg: String = String::from("mov rax, ");
             arg.push_str(&a.to_string());
