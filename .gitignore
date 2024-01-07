@@ -1,5 +1,6 @@
 target/
 bin/
-.vscode/
+bin
 *.opal
 *.asm
+*.o
