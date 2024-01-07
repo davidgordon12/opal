@@ -41,6 +41,8 @@ impl Compiler {
         self.exit();
     }
 
+    /* If it's a nested binary_expr, provide a source and desitination variable so that the top
+    * level expressions know where to get the result of the previous operation from */
     fn compile_binary_expr(&self, expr: BinaryExpr) {
         let mut lhs = 0.0;
         let mut rhs = 0.0;
