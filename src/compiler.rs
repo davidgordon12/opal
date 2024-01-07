@@ -31,39 +31,42 @@ impl Compiler {
         self.create_asm();
 
         /* Walk the tree here and determine the compilation method for the specific node */
+        let mut src = Box::new(false);
         for expr in &self.program.body {
             match expr {
-                Expr::BinaryExpr(x) => self.compile_binary_expr(x.clone()),
+                Expr::BinaryExpr(x) => self.compile_binary_expr(x.clone(), &mut src),
                 _ => {},
             }
-            
+
         }
         self.exit();
     }
 
     /* If it's a nested binary_expr, provide a source and desitination variable so that the top
     * level expressions know where to get the result of the previous operation from */
-    fn compile_binary_expr(&self, expr: BinaryExpr) {
+    fn compile_binary_expr(&self, expr: BinaryExpr, src: &mut Box<bool>) {
         let mut lhs = 0.0;
         let mut rhs = 0.0;
 
         let left = expr.left;
         match *left {
-            Expr::BinaryExpr(x) => self.compile_binary_expr(x), 
+            Expr::BinaryExpr(x) => self.compile_binary_expr(x, src), 
             Expr::Number(x) => lhs = x.value,
             _ => {},
         }
 
         let right = expr.right;
         match *right {
-            Expr::BinaryExpr(x) => self.compile_binary_expr(x), 
+            Expr::BinaryExpr(x) => self.compile_binary_expr(x, src), 
             Expr::Number(x) => rhs = x.value,
             _ => {},
         }
 
         let op = expr.operator.as_bytes()[0 as usize] as char;
         match &op {
-            '+' => self.add(lhs, rhs),      
+            '+' => { 
+                self.add(lhs, rhs, src);
+            },
             '-' => self.subtract(lhs, rhs),      
             '*' => self.multiply(lhs, rhs),      
             '/' => self.divide(lhs, rhs),      
@@ -71,20 +74,32 @@ impl Compiler {
         }
     }
 
-    fn add(&self, a: f64, b: f64) {
+    fn add(&self, a: f64, b: f64, src: &mut Box<bool>) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let mut arg: String = String::from("mov rax, ");
-        arg.push_str(&a.to_string());
+        if **src == true {
+            file.write(b"\n        ").unwrap();
 
-        file.write(b"\n        ").unwrap();
-        file.write(arg.as_bytes()).unwrap();
+            let mut arg: String = String::from("add rax, ");
+            arg.push_str(&b.to_string());
 
-        let mut arg: String = String::from("add rax, ");
-        arg.push_str(&b.to_string());
+            file.write(b"\n        ").unwrap();
+            file.write(arg.as_bytes()).unwrap();
+        } else {
+            let mut arg: String = String::from("mov rax, ");
+            arg.push_str(&a.to_string());
 
-        file.write(b"\n        ").unwrap();
-        file.write(arg.as_bytes()).unwrap();
+            file.write(b"\n        ").unwrap();
+            file.write(arg.as_bytes()).unwrap();
+
+            let mut arg: String = String::from("add rax, ");
+            arg.push_str(&b.to_string());
+
+            file.write(b"\n        ").unwrap();
+            file.write(arg.as_bytes()).unwrap();
+        }
+
+        **src = true;
     }
 
     fn subtract(&self, a: f64, b:f64) {
