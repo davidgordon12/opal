@@ -23,7 +23,7 @@ impl Compiler {
         let mut file = std::fs::File::options().append(true).create(true).open(&self.file_path).unwrap();
         file.write(b"section .text\n").unwrap();
         file.write(b"global _start\n").unwrap();
-        file.write(b"\n_start:").unwrap();
+        file.write(b"\n_start:\n").unwrap();
     }
 
     pub fn run(&mut self) {
@@ -64,12 +64,10 @@ impl Compiler {
 
         let op = expr.operator.as_bytes()[0 as usize] as char;
         match &op {
-            '+' => { 
-                self.add(lhs, rhs, src);
-            },
-            '-' => self.subtract(lhs, rhs),      
-            '*' => self.multiply(lhs, rhs),      
-            '/' => self.divide(lhs, rhs),      
+            '+' => self.add(lhs, rhs, src),
+            '-' => self.subtract(lhs, rhs, src),      
+            '*' => self.multiply(lhs, rhs, src),      
+            '/' => self.divide(lhs, rhs, src),      
             _ => error("Illegal operator", None),
         }
     }
@@ -115,59 +113,91 @@ impl Compiler {
         **src = true;
     }
 
-    fn subtract(&self, a: f64, b:f64) {
+    fn subtract(&self, a: f64, b:f64, src: &mut Box<bool>) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+        if **src == true {
+            if a == 0.0 {
+                file.write(b"\n        ").unwrap();
 
-        let mut arg: String = String::from("mov rax, ");
-        arg.push_str(&a.to_string());
+                let mut arg: String = String::from("sub rax, ");
+                arg.push_str(&b.to_string());
 
-        file.write(b"\n        ").unwrap();
-        file.write(arg.as_bytes()).unwrap();
+                file.write(b"\n        ").unwrap();
+                file.write(arg.as_bytes()).unwrap();
+            }
 
-        let mut arg: String = String::from("sub rax, ");
-        arg.push_str(&b.to_string());
+            if b == 0.0 {
+                file.write(b"\n        ").unwrap();
 
-        file.write(b"\n        ").unwrap();
-        file.write(arg.as_bytes()).unwrap();
+                let mut arg: String = String::from("sub rax, ");
+                arg.push_str(&a.to_string());
+
+                file.write(b"\n        ").unwrap();
+                file.write(arg.as_bytes()).unwrap();
+
+            }
+        } else {
+            let mut arg: String = String::from("mov rax, ");
+            arg.push_str(&a.to_string());
+
+            file.write(b"\n        ").unwrap();
+            file.write(arg.as_bytes()).unwrap();
+
+            let mut arg: String = String::from("sub rax, ");
+            arg.push_str(&b.to_string());
+
+            file.write(b"\n        ").unwrap();
+            file.write(arg.as_bytes()).unwrap();
+        }
+
+        **src = true;
     }
 
-    fn multiply(&self, a: f64, b:f64) {
+    fn multiply(&self, a: f64, b:f64, src: &mut Box<bool>) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
+        file.write(b"\n        ").unwrap();
         let mut arg: String = String::from("mov rax, ");
         arg.push_str(&a.to_string());
-
-        file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let mut arg: String = String::from("mul rax, ");
+        file.write(b"\n        ").unwrap();
+        let mut arg: String = String::from("mov rbx, ");
         arg.push_str(&b.to_string());
+        file.write(arg.as_bytes()).unwrap();
+
+        let arg: String = String::from("mul rax");
 
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
+
+        **src = true;
     }
 
-    fn divide(&self, a: f64, b:f64) {
+    fn divide(&self, a: f64, b:f64, src: &mut Box<bool>) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
+        file.write(b"\n        ").unwrap();
         let mut arg: String = String::from("mov rax, ");
         arg.push_str(&a.to_string());
-
-        file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let mut arg: String = String::from("div rax, ");
+        file.write(b"\n        ").unwrap();
+        let mut arg: String = String::from("mov rbx, ");
         arg.push_str(&b.to_string());
+        file.write(arg.as_bytes()).unwrap();
 
         file.write(b"\n        ").unwrap();
+        let arg: String = String::from("div rax");
         file.write(arg.as_bytes()).unwrap();
+
+        **src = true;
     }
 
     fn exit(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
         file.write(b"\n        ").unwrap();
-
         let arg: String = String::from("mov rax, 1");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
