@@ -23,7 +23,7 @@ impl Compiler {
         let mut file = std::fs::File::options().append(true).create(true).open(&self.file_path).unwrap();
         file.write(b"section .text\n").unwrap();
         file.write(b"global _start\n").unwrap();
-        file.write(b"\n_start:\n").unwrap();
+        file.write(b"\n_start:").unwrap();
     }
 
     pub fn run(&mut self) {
@@ -69,9 +69,9 @@ impl Compiler {
         let op = expr.operator;
         match &op {
             '+' => self.add(),
-            '-' => {},
-            '*' => {},
-            '/' => {},
+            '-' => self.subtract(),
+            '*' => self.multiply(),
+            '/' => self.divide(),
             _ => error("Illegal operator", None),
         }
     }
@@ -91,7 +91,31 @@ impl Compiler {
     fn add(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let arg: String = String::from("pop rax\n        pop rbx\n        add rax, rbx");
+        let arg: String = String::from("pop rbx\n        pop rax\n        add rax, rbx\n        push rax");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+    }
+
+    fn subtract(&self) {
+        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+
+        let arg: String = String::from("pop rbx\n        pop rax\n        sub rax, rbx\n        push rax");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+    }
+    
+    fn multiply(&self) {
+        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+
+        let arg: String = String::from("pop rbx\n        pop rax\n        mul rbx\n        push rax");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+    }
+
+    fn divide(&self) {
+        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+
+        let arg: String = String::from("pop rbx\n        pop rax\n        div rbx\n        push rax");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
