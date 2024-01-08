@@ -38,7 +38,7 @@ impl Parser {
         self.tokens[0].clone()
     }
 
-    fn parse_statment(&mut self) -> Expr {
+    fn parse_statment(&mut self) -> Stmt {
         self.parse_expression()
     }
 
@@ -54,11 +54,11 @@ impl Parser {
         Additive,
     */
 
-    fn parse_expression(&mut self) -> Expr {
+    fn parse_expression(&mut self) -> Stmt {
         self.parse_additive_expression()
     }
 
-    fn parse_additive_expression(&mut self) -> Expr {
+    fn parse_additive_expression(&mut self) -> Stmt {
         let mut left = self.parse_multiplicative_expression();
         
         while self.peek().token_type == TokenType::TokenPlus
@@ -66,15 +66,15 @@ impl Parser {
         {
             let operator_token = self.get_token();
             let right = self.parse_multiplicative_expression();
-            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
+            left = Stmt::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
                 Box::new(right.clone()), 
-                operator_token.literal));
+                operator_token.literal.as_bytes()[0] as char));
         }
     
         left
     }
 
-    fn parse_multiplicative_expression(&mut self) -> Expr {
+    fn parse_multiplicative_expression(&mut self) -> Stmt {
         let mut left = self.parse_power_expression();
         
         while self.peek().token_type == TokenType::TokenStar
@@ -83,37 +83,36 @@ impl Parser {
         {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();
-            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
+            left = Stmt::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
                 Box::new(right.clone()), 
-                operator_token.literal));
+                operator_token.literal.as_bytes()[0] as char));
         }
     
         left
     }
 
-    fn parse_power_expression(&mut self) -> Expr {
+    fn parse_power_expression(&mut self) -> Stmt {
         let mut left = self.parse_primary_expression();
         
         while self.peek().token_type == TokenType::TokenPower {
             let operator_token = self.get_token();
             let right = self.parse_primary_expression();
-            left = Expr::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
+            left = Stmt::BinaryExpr(BinaryExpr::new(Box::new(left.clone()), 
                 Box::new(right.clone()), 
-                operator_token.literal));
+                operator_token.literal.as_bytes()[0] as char));
         }
     
         left
     }
 
-    fn parse_primary_expression(&mut self) -> Expr {
+    fn parse_primary_expression(&mut self) -> Stmt {
         let token: Token = self.get_token();
 
         match token.token_type {
-            TokenType::TokenIdentifier => return Expr::Identifier(Identifier::new(token.literal)),
-            TokenType::TokenNumber => return Expr::Number(Number::new(token.literal.parse::<f64>().unwrap())),
-            TokenType::TokenNull => {
-                return Expr::NullLiteral(NullLiteral::new());
-            },
+            TokenType::TokenIdentifier => return Stmt::Identifier(Identifier::new(token.literal)),
+            TokenType::TokenNumber => return Stmt::Number(Number::new(token.literal.parse::<i64>().unwrap())),
+            TokenType::TokenFloat => return Stmt::Float(Float::new(token.literal.parse::<f64>().unwrap())),
+            TokenType::TokenNull => return Stmt::NullLiteral(NullLiteral::new()),
             TokenType::TokenLeftParen => {
                 let val = self.parse_expression();
                 let expected = self.get_token(); // Closing parenthesis

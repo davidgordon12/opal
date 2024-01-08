@@ -1,6 +1,6 @@
 use std::io::Write;
 
-use crate::ast::{Program, Expr, BinaryExpr};
+use crate::ast::{Program, Stmt, BinaryExpr};
 use crate::error::error;
 
 pub struct Compiler {
@@ -31,173 +31,84 @@ impl Compiler {
         self.create_asm();
 
         /* Walk the tree here and determine the compilation method for the specific node */
-        let mut src = Box::new(false);
-        for expr in &self.program.body {
-            match expr {
-                Expr::BinaryExpr(x) => self.compile_binary_expr(x.clone(), &mut src),
+        for stmt in self.program.body.clone() {
+            match stmt {
+                Stmt::BinaryExpr(x) => self.compile_binary_expr(x),
                 _ => {},
             }
-
         }
+
         self.exit();
     }
 
-    /* If it's a nested binary_expr, provide a source and desitination variable so that the top
-    * level expressions know where to get the result of the previous operation from */
-    fn compile_binary_expr(&self, expr: BinaryExpr, src: &mut Box<bool>) {
-        let mut lhs = 0.0;
-        let mut rhs = 0.0;
+    fn compile_binary_expr(&self, expr: BinaryExpr) {
+        /* 
+        * After every BinaryExpr, push to stack
+        * We need to carry over some sort of flag,
+        * to denote whether or not we need to pop for this
+        * particular expression
+        * If one arm is a BinaryExpr then pop one value
+        * If both arms are BinaryExprs then pop twice 
+        */
+        let lhs = *expr.left;
 
-        let left = expr.left;
-        match *left {
-            Expr::BinaryExpr(x) => self.compile_binary_expr(x, src), 
-            Expr::Number(x) => lhs = x.value,
-            _ => {},
+        match lhs {
+            Stmt::Number(n) => self.push_number(n.value),
+            Stmt::BinaryExpr(x) => self.compile_binary_expr(x),
+            _ => unimplemented!()
         }
 
-        let right = expr.right;
-        match *right {
-            Expr::BinaryExpr(x) => self.compile_binary_expr(x, src), 
-            Expr::Number(x) => rhs = x.value,
-            _ => {},
+        let rhs = *expr.right;
+
+        match rhs {
+            Stmt::Number(n) => self.push_number(n.value),
+            Stmt::BinaryExpr(x) => self.compile_binary_expr(x),
+            _ => unimplemented!()
         }
 
-        let op = expr.operator.as_bytes()[0 as usize] as char;
+        let op = expr.operator;
         match &op {
-            '+' => self.add(lhs, rhs, src),
-            '-' => self.subtract(lhs, rhs, src),      
-            '*' => self.multiply(lhs, rhs, src),      
-            '/' => self.divide(lhs, rhs, src),      
+            '+' => self.add(),
+            '-' => {},
+            '*' => {},
+            '/' => {},
             _ => error("Illegal operator", None),
         }
     }
 
-    fn add(&self, a: f64, b: f64, src: &mut Box<bool>) {
+    fn push_number(&self, n: i64) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        if **src == true {
-            if a == 0.0 {
-                file.write(b"\n        ").unwrap();
-
-                let mut arg: String = String::from("add rax, ");
-                arg.push_str(&b.to_string());
-
-                file.write(b"\n        ").unwrap();
-                file.write(arg.as_bytes()).unwrap();
-            }
-
-            if b == 0.0 {
-                file.write(b"\n        ").unwrap();
-
-                let mut arg: String = String::from("add rax, ");
-                arg.push_str(&a.to_string());
-
-                file.write(b"\n        ").unwrap();
-                file.write(arg.as_bytes()).unwrap();
-
-            }
-        } else {
-            let mut arg: String = String::from("mov rax, ");
-            arg.push_str(&a.to_string());
-
-            file.write(b"\n        ").unwrap();
-            file.write(arg.as_bytes()).unwrap();
-
-            let mut arg: String = String::from("add rax, ");
-            arg.push_str(&b.to_string());
-
-            file.write(b"\n        ").unwrap();
-            file.write(arg.as_bytes()).unwrap();
-        }
-
-        **src = true;
-    }
-
-    fn subtract(&self, a: f64, b:f64, src: &mut Box<bool>) {
-        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
-        if **src == true {
-            if a == 0.0 {
-                file.write(b"\n        ").unwrap();
-
-                let mut arg: String = String::from("sub rax, ");
-                arg.push_str(&b.to_string());
-
-                file.write(b"\n        ").unwrap();
-                file.write(arg.as_bytes()).unwrap();
-            }
-
-            if b == 0.0 {
-                file.write(b"\n        ").unwrap();
-
-                let mut arg: String = String::from("sub rax, ");
-                arg.push_str(&a.to_string());
-
-                file.write(b"\n        ").unwrap();
-                file.write(arg.as_bytes()).unwrap();
-
-            }
-        } else {
-            let mut arg: String = String::from("mov rax, ");
-            arg.push_str(&a.to_string());
-
-            file.write(b"\n        ").unwrap();
-            file.write(arg.as_bytes()).unwrap();
-
-            let mut arg: String = String::from("sub rax, ");
-            arg.push_str(&b.to_string());
-
-            file.write(b"\n        ").unwrap();
-            file.write(arg.as_bytes()).unwrap();
-        }
-
-        **src = true;
-    }
-
-    fn multiply(&self, a: f64, b:f64, src: &mut Box<bool>) {
-        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
-
-        file.write(b"\n        ").unwrap();
         let mut arg: String = String::from("mov rax, ");
-        arg.push_str(&a.to_string());
-        file.write(arg.as_bytes()).unwrap();
-
-        file.write(b"\n        ").unwrap();
-        let mut arg: String = String::from("mov rbx, ");
-        arg.push_str(&b.to_string());
-        file.write(arg.as_bytes()).unwrap();
-
-        let arg: String = String::from("mul rax");
-
+        arg.push_str(&n.to_string());
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        **src = true;
+        file.write(b"\n        ").unwrap();
+        file.write(b"push rax").unwrap();
     }
 
-    fn divide(&self, a: f64, b:f64, src: &mut Box<bool>) {
+    fn add(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
+        let arg: String = String::from("pop rax\n        pop rbx\n        add rax, rbx");
         file.write(b"\n        ").unwrap();
-        let mut arg: String = String::from("mov rax, ");
-        arg.push_str(&a.to_string());
         file.write(arg.as_bytes()).unwrap();
-
-        file.write(b"\n        ").unwrap();
-        let mut arg: String = String::from("mov rbx, ");
-        arg.push_str(&b.to_string());
-        file.write(arg.as_bytes()).unwrap();
-
-        file.write(b"\n        ").unwrap();
-        let arg: String = String::from("div rax");
-        file.write(arg.as_bytes()).unwrap();
-
-        **src = true;
     }
 
     fn exit(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
         file.write(b"\n        ").unwrap();
+        file.write(b"jmp exit").unwrap();
+
+        file.write(b"\n        ").unwrap();
+        file.write(b"ret").unwrap();
+
+        let arg: String = String::from("\nexit:");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+
         let arg: String = String::from("mov rax, 1");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();

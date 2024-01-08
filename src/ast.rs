@@ -1,9 +1,8 @@
-use crate::error::error;
-
 #[derive(Debug, Clone)]
 pub enum NodeType {
     Program,
     Number,
+    Float,
     Identifier,
     BinaryExpr,
     NullLiteral,
@@ -12,7 +11,7 @@ pub enum NodeType {
 #[derive(Debug, Clone)]
 pub struct Program {
     pub kind: NodeType,
-    pub body: Vec<Expr>,
+    pub body: Vec<Stmt>,
 }
 
 impl Program {
@@ -25,62 +24,24 @@ impl Program {
 }
 
 #[derive(Debug, Clone)]
-pub enum Expr {
+pub enum Stmt {
     Number(Number),
+    Float(Float),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
     NullLiteral(NullLiteral),
 }
 
-#[allow(dead_code)]
-impl Expr {
-    pub fn unwrap_binary_expr(self) -> BinaryExpr {
-        match self {
-            Expr::BinaryExpr(x) => return x,
-            _ => error("Expeted binary expression.", None)
-        }
-
-        unreachable!()
-    }
-
-    pub fn unwrap_identifier(self) -> Identifier {
-        match self {
-            Expr::Identifier(x) => return x,
-            _ => error("Expeted identifier.", None)
-        }
-
-        unreachable!()
-    }
-
-    pub fn unwrap_number(self) -> Number {
-        match self {
-            Expr::Number(x) => return x,
-            _ => error("Expeted number.", None),
-        }
-
-        unreachable!()
-    }
-
-    pub fn unwrap_null_literal(self) -> NullLiteral {
-        match self {
-            Expr::NullLiteral(x) => return x,
-            _ => error("Expected null literal.", None),
-        }
-
-        unreachable!()
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct BinaryExpr {
     pub kind: NodeType,
-    pub left: Box<Expr>,
-    pub right: Box<Expr>,
-    pub operator: String,
+    pub left: Box<Stmt>,
+    pub right: Box<Stmt>,
+    pub operator: char,
 }
 
 impl BinaryExpr {
-    pub fn new(left: Box<Expr>, right: Box<Expr>, operator: String) -> Self {
+    pub fn new(left: Box<Stmt>, right: Box<Stmt>, operator: char) -> Self {
         BinaryExpr {
             kind: NodeType::BinaryExpr,
             left: left,
@@ -108,13 +69,28 @@ impl Identifier {
 #[derive(Debug, Clone)]
 pub struct Number {
     pub kind: NodeType,
-    pub value: f64,
+    pub value: i64,
 }
 
 impl Number {
-    pub fn new(value: f64) -> Self {
+    pub fn new(value: i64) -> Self {
         Number {
             kind: NodeType::Number,
+            value: value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Float {
+    pub kind: NodeType,
+    pub value: f64,
+}
+
+impl Float {
+    pub fn new(value: f64) -> Self {
+        Float {
+            kind: NodeType::Float,
             value: value,
         }
     }

@@ -236,10 +236,12 @@ impl Lexer {
             .take((self.current-self.start) as usize)
             .collect();
 
+        let t_type: TokenType = if ident.contains('.') { TokenType::TokenFloat } else { TokenType::TokenNumber };
+
         Token {
             line: self.line,
             literal: ident,
-            token_type: TokenType::TokenNumber,
+            token_type: t_type,
         }
     }
 

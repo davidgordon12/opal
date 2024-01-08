@@ -14,7 +14,7 @@ pub enum TokenType {
     TokenLess, TokenLessEqual,
     
     // Literals.
-    TokenIdentifier, TokenString, TokenNumber,
+    TokenIdentifier, TokenString, TokenNumber, TokenFloat,
     
     // Keywords.
     TokenAnd, TokenElse, TokenFalse,
