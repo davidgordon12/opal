@@ -6,6 +6,7 @@ A(n in-progress) handwritten Lexer, Parser and Compiler written in Rust.
 * [x] In-Depth error logging
 * [x] Single arithmetic equations
 * [x] Complex binary expressions
+* [ ] Floating Point arithmetic
 * [ ] Variable declerations
 * [ ] Function Declarations
 * [ ] Basic standard library
