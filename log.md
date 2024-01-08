@@ -22,3 +22,6 @@ Take for example;
 This is trivial as we can just move 2 into rax, and directly add rax with 3. But what if the operation looked like this;
 2+3*3
 First we need to multiply 3*3. We can do the same thing and move 3 into rax, then mul rax, 3. Only one move! But how do we bring the result from the right side of our operation into the left side? Of course you could get the result in our program and then compile it but then we are just writing an interpreter. The simplest way I can think of is to use a stack and push / pop values as we need them. This is a lot slower than what I was intending to do with just registers but I do not see any other way at the moment.
+
+## 2024-01-08
+My previous optimizations actually broke the div and mul instructions because you cannot provide a constant to that operation, only a value from a register. I am currently implementing the stack solution I mentioned in my previous entry and so far have addition and subtratction working. I am debating on whether or not I want to link with the C standard library to make my life easier, this will require a few simple tweaks but it is better to decide early on than later.
