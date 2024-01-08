@@ -26,3 +26,9 @@ ld <output.o> -o <executable>
 ```
 
 You should now have an executable file in a 64-bit ELF format.
+
+## Todo
+* [ ] Package up all code generation files into a single module
+* [ ] Cleanup undescriptive variable names like 'x' wherever they are
+* [ ] Remove any redundant clones, copies and borrows
+* [ ] Any other small refactors I find along the way :)
