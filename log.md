@@ -25,3 +25,6 @@ First we need to multiply 3*3. We can do the same thing and move 3 into rax, the
 
 ## 2024-01-08
 My previous optimizations actually broke the div and mul instructions because you cannot provide a constant to that operation, only a value from a register. I am currently implementing the stack solution I mentioned in my previous entry and so far have addition and subtratction working. I am debating on whether or not I want to link with the C standard library to make my life easier, this will require a few simple tweaks but it is better to decide early on than later.
+
+### Continued;
+Complex binary expressions now work, with a brute force approach of pushing each value or result of an operation to the stack, then popping two values each time. In the future we can do a few more passes to optimize this but that will not even be considered until the rest of the check list is done.
