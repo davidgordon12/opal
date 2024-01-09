@@ -88,10 +88,23 @@ impl Compiler {
         file.write(b"push rax").unwrap();
     }
 
+    fn pop_number(&self, register: &str) {
+        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+
+        let mut arg: String = String::from("pop ");
+        arg.push_str(register);
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+    }
+
     fn add(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let arg: String = String::from("pop rbx\n        pop rax\n        add rax, rbx\n        push rax");
+        self.pop_number("rbx");
+        self.pop_number("rax");
+
+        let arg: String = String::from("add rax, rbx\n        push rax");
+
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
@@ -99,7 +112,11 @@ impl Compiler {
     fn subtract(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let arg: String = String::from("pop rbx\n        pop rax\n        sub rax, rbx\n        push rax");
+        self.pop_number("rbx");
+        self.pop_number("rax");
+
+        let arg: String = String::from("sub rax, rbx\n        push rax");
+
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
@@ -107,7 +124,11 @@ impl Compiler {
     fn multiply(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let arg: String = String::from("pop rbx\n        pop rax\n        mul rbx\n        push rax");
+        self.pop_number("rbx");
+        self.pop_number("rax");
+
+        let arg: String = String::from("mul rbx\n        push rax");
+
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
@@ -115,7 +136,11 @@ impl Compiler {
     fn divide(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
-        let arg: String = String::from("pop rbx\n        pop rax\n        div rbx\n        push rax");
+        self.pop_number("rbx");
+        self.pop_number("rax");
+
+        let arg: String = String::from("div rbx\n        push rax");
+
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
