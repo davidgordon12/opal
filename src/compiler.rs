@@ -21,9 +21,9 @@ impl Compiler {
     pub fn create_asm(&self) {
         let _ = std::fs::remove_file(&self.file_path);
         let mut file = std::fs::File::options().append(true).create(true).open(&self.file_path).unwrap();
-        file.write(b"global _start\n\n").unwrap();
+        file.write(b"global main\n\n").unwrap();
         file.write(b"section .text\n\n").unwrap();
-        file.write(b"_start:").unwrap();
+        file.write(b"main:").unwrap();
     }
 
     pub fn run(&mut self) {
