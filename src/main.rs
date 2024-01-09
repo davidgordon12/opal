@@ -10,7 +10,7 @@ mod tokens;
 mod lexer;
 mod parser;
 mod ast;
-mod compiler;
+mod code_generation;
 
 fn main() {
     let mut args: VecDeque<String> = env::args().collect();

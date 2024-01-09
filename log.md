@@ -28,3 +28,6 @@ My previous optimizations actually broke the div and mul instructions because yo
 
 ### Continued;
 Complex binary expressions now work, with a brute force approach of pushing each value or result of an operation to the stack, then popping two values each time. In the future we can do a few more passes to optimize this but that will not even be considered until the rest of the check list is done.
+
+## 2024-01-09
+The global entry point is now "main", and I'm linking with glibc just so I can get Opal off the ground a bit quicker. We have implemented print for digits using glibc's printf, and I plan on adding support for more glibc functions, but first I plan on doing a small refactor of our code generation (compiler.rs).

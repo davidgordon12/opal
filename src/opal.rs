@@ -5,7 +5,7 @@ use crate::tokens::Token;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
 use crate::ast::Program;
-use crate::compiler::Compiler;
+use crate::code_generation::visitor::Visitor;
 
 fn read_file(path: String) -> String {
     fs::read_to_string(path).unwrap()
@@ -27,7 +27,7 @@ pub fn opalc(files: VecDeque<String>) {
         let program: Program = parser.create_ast();
 
         println!("{:#?}", program);
-        let mut compiler: Compiler = Compiler::new(x.clone(), program);
-        compiler.run();   
+        let mut visitor: Visitor = Visitor::new(x.clone(), program);
+        visitor.run();   
     }
 }
