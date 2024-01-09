@@ -21,9 +21,9 @@ impl Compiler {
     pub fn create_asm(&self) {
         let _ = std::fs::remove_file(&self.file_path);
         let mut file = std::fs::File::options().append(true).create(true).open(&self.file_path).unwrap();
-        file.write(b"section .text\n").unwrap();
-        file.write(b"global _start\n").unwrap();
-        file.write(b"\n_start:").unwrap();
+        file.write(b"global _start\n\n").unwrap();
+        file.write(b"section .text\n\n").unwrap();
+        file.write(b"_start:").unwrap();
     }
 
     pub fn run(&mut self) {
@@ -38,6 +38,7 @@ impl Compiler {
             }
         }
 
+        self.print();
         self.exit();
     }
 
@@ -145,28 +146,47 @@ impl Compiler {
         file.write(arg.as_bytes()).unwrap();
     }
 
+    fn print(&self) {
+        let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
+
+        file.write(b"\n        ").unwrap();
+        file.write(b"jmp print").unwrap();
+
+        let arg: String = String::from("\nprint:");
+        file.write(b"\n        ").unwrap();
+        file.write(arg.as_bytes()).unwrap();
+
+        file.write(b"\n        ").unwrap();
+        file.write(b"mov rax, 1").unwrap();
+        file.write(b"\n        ").unwrap();
+        file.write(b"mov rdi, 1").unwrap();
+        file.write(b"\n        ").unwrap();
+        file.write(b"pop rsi").unwrap();
+        file.write(b"\n        ").unwrap();
+        file.write(b"mov rdx, 1").unwrap();
+        file.write(b"\n        ").unwrap();
+        file.write(b"syscall").unwrap();
+    }
+
     fn exit(&self) {
         let mut file = std::fs::File::options().write(true).append(true).open(&self.file_path).unwrap();
 
         file.write(b"\n        ").unwrap();
         file.write(b"jmp exit").unwrap();
 
-        file.write(b"\n        ").unwrap();
-        file.write(b"ret").unwrap();
-
         let arg: String = String::from("\nexit:");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("mov rax, 1");
+        let arg: String = String::from("mov rax, 60");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("mov rbx, 0");
+        let arg: String = String::from("mov rdi, 99");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        let arg: String = String::from("int 0x80");
+        let arg: String = String::from("syscall");
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
     }
