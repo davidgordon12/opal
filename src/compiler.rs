@@ -1,4 +1,5 @@
 use std::io::Write;
+use std::os::unix::fs::FileExt;
 
 use crate::ast::{Program, Stmt, BinaryExpr};
 use crate::error::error;
@@ -21,8 +22,15 @@ impl Compiler {
     pub fn create_asm(&self) {
         let _ = std::fs::remove_file(&self.file_path);
         let mut file = std::fs::File::options().append(true).create(true).open(&self.file_path).unwrap();
-        file.write(b"global main\n\n").unwrap();
+
+        file.write(b"section .data
+        fmt:    db    `%d\\n`\n").unwrap();
+
+        file.write(b"\n").unwrap();
+
         file.write(b"section .text\n\n").unwrap();
+        file.write(b"global main\n\n").unwrap();
+        file.write(b"extern printf\n\n").unwrap();
         file.write(b"main:").unwrap();
     }
 
@@ -156,16 +164,15 @@ impl Compiler {
         file.write(b"\n        ").unwrap();
         file.write(arg.as_bytes()).unwrap();
 
-        file.write(b"\n        ").unwrap();
-        file.write(b"mov rax, 1").unwrap();
-        file.write(b"\n        ").unwrap();
-        file.write(b"mov rdi, 1").unwrap();
-        file.write(b"\n        ").unwrap();
-        file.write(b"pop rsi").unwrap();
-        file.write(b"\n        ").unwrap();
-        file.write(b"mov rdx, 1").unwrap();
-        file.write(b"\n        ").unwrap();
-        file.write(b"syscall").unwrap();
+        file.write(b"
+        pop rsi
+        push rbp
+        mov rbp, rsp
+        lea rdi, [fmt]
+        xor rax, rax
+        call printf
+        xor rax, rax
+        leave").unwrap();
     }
 
     fn exit(&self) {
