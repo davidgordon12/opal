@@ -1,8 +1,8 @@
 use std::io::Write;
 
-use crate::code_generation::stack::pop_number;
 
-use super::stack::push_register;
+use crate::code_generation::stack::pop_number;
+use crate::code_generation::stack::push_register;
 
 pub fn add(file_path: &str) {
     let mut path = file_path.to_string();

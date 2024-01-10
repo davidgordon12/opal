@@ -20,6 +20,10 @@ pub fn create_data_section(file_path: &str) {
     let mut file = std::fs::File::options().append(true).create(true).open(path).unwrap();
 
     file.write(b"section .data\n").unwrap();
+    file.write(b"fmt_digit db `%d\\n`\n").unwrap();
+    file.write(b"fmt_char db `%c\\n`\n").unwrap();
+    file.write(b"fmt_string db `%s\\n`\n").unwrap();
+    file.write(b"fmt_float db `%f\\n`\n").unwrap();
 }
 
 pub fn create_bss_section(file_path: &str) {

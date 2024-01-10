@@ -3,7 +3,7 @@ use crate::error::error;
 
 use crate::code_generation::stack::push_number;
 use crate::code_generation::binop::*;
-use crate::code_generation::assembly::*;
+use crate::code_generation::bootstrap::*;
 
 pub struct Visitor {
     program: Program,
