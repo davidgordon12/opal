@@ -22,7 +22,6 @@ impl Visitor {
 
 
     pub fn run(&mut self) {
-        /* This method will walk the AST and generate the source code into NASM assembly for the x86_64 architecture */
         create_text_section(&self.file_path);
         create_data_section(&self.file_path);
         create_bss_section(&self.file_path);
@@ -39,14 +38,6 @@ impl Visitor {
     }
 
     fn generate_binary_expr(&self, expr: BinaryExpr) {
-        /* 
-        * After every BinaryExpr, push to stack
-        * We need to carry over some sort of flag,
-        * to denote whether or not we need to pop for this
-        * particular expression
-        * If one arm is a BinaryExpr then pop one value
-        * If both arms are BinaryExprs then pop twice 
-        */
         let lhs = *expr.left;
 
         match lhs {
