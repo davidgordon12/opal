@@ -42,6 +42,7 @@ impl Parser {
     fn parse_statment(&mut self) -> Stmt {
         match self.peek().token_type {
             TokenType::TokenLet => return self.parse_let_declarataion(),
+            TokenType::TokenProc => return self.parse_proc_declaration(),
             _ => return self.parse_expression(),
         }
     }
@@ -51,26 +52,57 @@ impl Parser {
         self.get_token();
         
         let ident = self.get_token().literal;
-        
+
+        let mut value: Stmt = Stmt::Number(Number::new(0));
+
         if self.get_token().token_type != TokenType::TokenEqual {
-            error("Variable must be initialized upon declaration on line", Some(&self.peek().line.to_string()));
-        }
+            error("Uninitialized variable on line", Some(&self.peek().line.to_string()));
+        } 
 
         let token = self.get_token();
-        let mut value: Stmt = Stmt::Number(Number::new(0));
 
         match token.token_type {
             TokenType::TokenString => { value = Stmt::OString(OString::new(token.literal)) },
             TokenType::TokenNumber => { value = Stmt::Number(Number::new(token.literal.parse::<i64>().unwrap())) },
             TokenType::TokenFloat => { value = Stmt::Float(Float::new(token.literal.parse::<f64>().unwrap())) },
-            _ => error("Variable can not be of type", Some(&token.literal))
+            TokenType::TokenIdentifier => { value = Stmt::Identifier(Identifier::new(token.literal)) },
+            _ => error("Variable can not be of type", Some(&token.literal)),
         }
 
-        if self.get_token().token_type != TokenType::TokenSemicolon {
-            error("Unclosed variable declaration on line", Some(&self.peek().line.to_string()));
+        match self.get_token().token_type  {
+            TokenType::TokenPlus => {},
+            TokenType::TokenMinus => {},
+            TokenType::TokenStar => {},
+            TokenType::TokenSlash => {},
+            TokenType::TokenPower => {},
+            TokenType::TokenModulo => {},
+            TokenType::TokenSemicolon => {},
+            _ => error("Unclosed variable declaration on line", Some(&self.peek().line.to_string())),
         }
 
         Stmt::LetDeclaration(LetDeclaration::new(ident, Box::from(value)))
+    }
+
+    fn parse_proc_declaration(&mut self) -> Stmt {
+        // Eat the 'Proc' token since we only peeked before coming here
+        self.get_token();
+
+        let ident = self.get_token().literal;
+
+        let mut proc = ProcDeclaration::new(ident);
+
+        if self.get_token().token_type != TokenType::TokenLeftBrace {
+            error("Expected '{' after declaring a procedure on line", Some(&self.peek().line.to_string()));
+        }
+
+        while self.peek().token_type != TokenType::TokenRightBrace {
+            proc.body.push(self.parse_statment());
+        }
+
+        // Eat closing brace
+        self.get_token();
+
+        Stmt::ProcDeclaration(proc)
     }
 
     /* PRECEDENCE

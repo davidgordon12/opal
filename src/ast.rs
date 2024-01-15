@@ -1,4 +1,16 @@
 #[derive(Debug, Clone)]
+pub enum Stmt {
+    Number(Number),
+    Float(Float),
+    OString(OString),
+    Identifier(Identifier),
+    BinaryExpr(BinaryExpr),    
+    NullLiteral(NullLiteral),
+    LetDeclaration(LetDeclaration),
+    ProcDeclaration(ProcDeclaration),
+}
+
+#[derive(Debug, Clone)]
 pub struct Program {
     pub body: Vec<Stmt>,
 }
@@ -12,17 +24,6 @@ impl Program {
 }
 
 #[derive(Debug, Clone)]
-pub enum Stmt {
-    Number(Number),
-    Float(Float),
-    OString(OString),
-    Identifier(Identifier),
-    BinaryExpr(BinaryExpr),    
-    NullLiteral(NullLiteral),
-    LetDeclaration(LetDeclaration),
-}
-
-#[derive(Debug, Clone)]
 pub struct LetDeclaration {
     pub identifier: String,
     pub value: Box<Stmt>,
@@ -33,6 +34,21 @@ impl LetDeclaration {
         LetDeclaration {
             identifier: identifier,
             value: value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ProcDeclaration {
+    pub identifier: String,
+    pub body: Vec<Stmt>,
+}
+
+impl ProcDeclaration {
+    pub fn new(identifier: String) -> Self {
+        ProcDeclaration {
+            identifier: identifier,
+            body: Vec::new(),
         }
     }
 }
