@@ -27,7 +27,8 @@ pub fn opalc(files: VecDeque<String>) {
         let program: Program = parser.create_ast();
 
         println!("{:#?}", program);
-        let mut visitor: Visitor = Visitor::new(x.clone(), program);
-        visitor.run();   
+
+        //let mut visitor: Visitor = Visitor::new(x.clone(), program);
+        //visitor.run();   
     }
 }

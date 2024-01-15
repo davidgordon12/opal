@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::collections::VecDeque;
 
 use crate::error::error;
@@ -39,7 +40,37 @@ impl Parser {
     }
 
     fn parse_statment(&mut self) -> Stmt {
-        self.parse_expression()
+        match self.peek().token_type {
+            TokenType::TokenLet => return self.parse_let_declarataion(),
+            _ => return self.parse_expression(),
+        }
+    }
+
+    fn parse_let_declarataion(&mut self) -> Stmt {
+        // Eat the 'Let' token since we only peeked before coming here
+        self.get_token();
+        
+        let ident = self.get_token().literal;
+        
+        if self.get_token().token_type != TokenType::TokenEqual {
+            error("Variable must be initialized upon declaration on line", Some(&self.peek().line.to_string()));
+        }
+
+        let token = self.get_token();
+        let mut value: Stmt = Stmt::Number(Number::new(0));
+
+        match token.token_type {
+            TokenType::TokenString => { value = Stmt::OString(OString::new(token.literal)) },
+            TokenType::TokenNumber => { value = Stmt::Number(Number::new(token.literal.parse::<i64>().unwrap())) },
+            TokenType::TokenFloat => { value = Stmt::Float(Float::new(token.literal.parse::<f64>().unwrap())) },
+            _ => error("Variable can not be of type", Some(&token.literal))
+        }
+
+        if self.get_token().token_type != TokenType::TokenSemicolon {
+            error("Unclosed variable declaration on line", Some(&self.peek().line.to_string()));
+        }
+
+        Stmt::LetDeclaration(LetDeclaration::new(ident, Box::from(value)))
     }
 
     /* PRECEDENCE
