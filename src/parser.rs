@@ -70,13 +70,13 @@ impl Parser {
         }
 
         match self.get_token().token_type  {
-            TokenType::TokenPlus => {},
+            TokenType::TokenPlus => { value = self.parse_expression(); },
             TokenType::TokenMinus => {},
             TokenType::TokenStar => {},
             TokenType::TokenSlash => {},
             TokenType::TokenPower => {},
             TokenType::TokenModulo => {},
-            TokenType::TokenSemicolon => {},
+            TokenType::TokenSemicolon => { },
             _ => error("Unclosed variable declaration on line", Some(&self.peek().line.to_string())),
         }
 
