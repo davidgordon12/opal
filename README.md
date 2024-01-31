@@ -23,13 +23,13 @@ This project generates NASM x86_64 Intel assembly, and is intended to be used wi
 nasm -f elf64 <file.asm> -o <output.o>
 ```
 ```bash
-ld <output.o> -o <executable>
+gcc <output.o> -o <executable>
 ```
 
 You should now have an executable file in a 64-bit ELF format.
 
 ## Todo
-* [ ] Package up all code generation files into a single module
+* [x] Package up all code generation files into a single module
 * [ ] Cleanup undescriptive variable names like 'x' wherever they are
 * [ ] Remove any redundant clones, copies and borrows
 * [ ] Any other small refactors I find along the way :)
