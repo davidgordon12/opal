@@ -2,6 +2,7 @@
 target/
 bin/
 bin
+cargo.lock
 *.opal
 *.asm
 *.o
