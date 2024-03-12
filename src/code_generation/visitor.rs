@@ -1,4 +1,4 @@
-use crate::ast::{Program, Stmt, BinaryExpr};
+use crate::ast::{Program, Stmt, BinaryExpr, LetDeclaration};
 use crate::error::error;
 
 use crate::code_generation::stack::push_number;
@@ -20,7 +20,6 @@ impl Visitor {
         }
     }
 
-
     pub fn run(&mut self) {
         create_text_section(&self.file_path);
         create_data_section(&self.file_path);
@@ -30,6 +29,7 @@ impl Visitor {
         for stmt in self.program.body.clone() {
             match stmt {
                 Stmt::BinaryExpr(x) => self.generate_binary_expr(x),
+                Stmt::LetDeclaration(x) => self.generate_let_decl(x),
                 _ => {},
             }
         }
@@ -61,6 +61,17 @@ impl Visitor {
             '*' => multiply(&self.file_path),
             '/' => divide(&self.file_path),
             _ => error("Illegal operator", None),
+        }
+    }
+
+    fn generate_let_decl(&self, decl: LetDeclaration) {
+        let ident = decl.identifier;
+        let val = *decl.value;
+
+        match val {
+            Stmt::Number(x) => println!("Variable \"{}\" has a value of `{:#?}`.", ident, x.value),
+            Stmt::BinaryExpr(x) => println!("Variable \"{}\" has a value of `{:#?}`.", ident, x.operator),
+            _ => unimplemented!()
         }
     }
 }

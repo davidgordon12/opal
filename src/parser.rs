@@ -58,26 +58,7 @@ impl Parser {
             error("Uninitialized variable on line", Some(&self.peek().line.to_string()));
         } 
 
-        let token = self.get_token();
-
-        match token.token_type {
-            TokenType::TokenString => { value = Stmt::OString(OString::new(token.literal)) },
-            TokenType::TokenNumber => { value = Stmt::Number(Number::new(token.literal.parse::<i64>().unwrap())) },
-            TokenType::TokenFloat => { value = Stmt::Float(Float::new(token.literal.parse::<f64>().unwrap())) },
-            TokenType::TokenIdentifier => { value = Stmt::Identifier(Identifier::new(token.literal)) },
-            _ => error("Variable can not be of type", Some(&token.literal)),
-        }
-
-        match self.get_token().token_type  {
-            TokenType::TokenPlus => { value = self.parse_expression(); },
-            TokenType::TokenMinus => {},
-            TokenType::TokenStar => {},
-            TokenType::TokenSlash => {},
-            TokenType::TokenPower => {},
-            TokenType::TokenModulo => {},
-            TokenType::TokenSemicolon => { },
-            _ => error("Unclosed variable declaration on line", Some(&self.peek().line.to_string())),
-        }
+        value = self.parse_expression();
 
         Stmt::LetDeclaration(LetDeclaration::new(ident, Box::from(value)))
     }
