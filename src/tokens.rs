@@ -12,6 +12,7 @@ pub enum TokenType {
     TokenEqual, TokenEqualEqual,
     TokenGreater, TokenGreaterEqual,
     TokenLess, TokenLessEqual,
+    TokenColon, TokenArrow,
     
     // Literals.
     TokenIdentifier, TokenString, TokenNumber, TokenFloat,
@@ -45,6 +46,8 @@ pub fn reserved_keyword(keyword: &str) -> TokenType {
         "null" => TokenType::TokenNull,
         "not" => TokenType::TokenNot,
         "return" => TokenType::TokenReturn,
+        "str" => TokenType::TokenString,
+        "number" => TokenType::TokenNumber,
         _ => TokenType::TokenIdentifier,
     }
 }

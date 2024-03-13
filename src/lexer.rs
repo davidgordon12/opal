@@ -62,13 +62,19 @@ impl Lexer {
             ']' => return self.make_token(TokenType::TokenRightBracket),
             '.' => return self.make_token(TokenType::TokenDot),
             ',' => return self.make_token(TokenType::TokenComma),
+            ':' => return self.make_token(TokenType::TokenColon),
             ';' => return self.make_token(TokenType::TokenSemicolon),
             '+' => return self.make_token(TokenType::TokenPlus),
-            '-' => return self.make_token(TokenType::TokenMinus),
             '*' => return self.make_token(TokenType::TokenStar),
             '/' => return self.make_token(TokenType::TokenSlash),
             '^' => return self.make_token(TokenType::TokenPower),
             '%' => return self.make_token(TokenType::TokenModulo),
+            '-' => {
+                match self.next_char('>') {
+                    true => return self.make_token(TokenType::TokenArrow),
+                    false => return self.make_token(TokenType::TokenMinus),
+                };
+            },
             '=' => {
                 match self.next_char('=') {
                     true => return self.make_token(TokenType::TokenEqualEqual),
@@ -129,6 +135,7 @@ impl Lexer {
             TokenType::TokenRightBracket => literal = "]",
             TokenType::TokenDot => literal = ".",
             TokenType::TokenComma => literal = ",",
+            TokenType::TokenColon => literal = ":",
             TokenType::TokenSemicolon => literal = ";",
             TokenType::TokenPlus => literal = "+",
             TokenType::TokenMinus => literal = "-",
@@ -137,6 +144,7 @@ impl Lexer {
             TokenType::TokenPower => literal = "^",
             TokenType::TokenModulo => literal = "%",
             TokenType::TokenPound => literal = "#",
+            TokenType::TokenArrow => literal = "->",
             TokenType::TokenEqual => literal = "=",
             TokenType::TokenEqualEqual => literal = "==",
             TokenType::TokenBang => literal = "!",
