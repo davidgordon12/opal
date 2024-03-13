@@ -26,7 +26,7 @@ fn main() {
     for x in &args {
         // This will fail if a file has multiple '.'s, but we will choose not to support that for the time being
         if let Some(idx) = x.find('.') {
-            if x.split_at(idx).1 != ".xd" { 
+            if x.split_at(idx).1 != ".opal" { 
                 panic!("Invalid file type");
             }
         } else {
