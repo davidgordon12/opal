@@ -1,5 +1,5 @@
 #[derive(Debug, Clone)]
-pub enum Stmt {
+pub enum Node {
     Number(Number),
     Float(Float),
     OString(OString),
@@ -12,7 +12,7 @@ pub enum Stmt {
 
 #[derive(Debug, Clone)]
 pub struct Program {
-    pub body: Vec<Stmt>,
+    pub body: Vec<Node>,
 }
 
 impl Program {
@@ -26,11 +26,11 @@ impl Program {
 #[derive(Debug, Clone)]
 pub struct LetDeclaration {
     pub identifier: String,
-    pub value: Box<Stmt>,
+    pub value: Box<Node>,
 }
 
 impl LetDeclaration {
-    pub fn new(identifier: String, value: Box<Stmt>) -> Self {
+    pub fn new(identifier: String, value: Box<Node>) -> Self {
         LetDeclaration {
             identifier: identifier,
             value: value,
@@ -41,7 +41,7 @@ impl LetDeclaration {
 #[derive(Debug, Clone)]
 pub struct ProcDeclaration {
     pub identifier: String,
-    pub body: Vec<Stmt>,
+    pub body: Vec<Node>,
 }
 
 impl ProcDeclaration {
@@ -55,13 +55,13 @@ impl ProcDeclaration {
 
 #[derive(Debug, Clone)]
 pub struct BinaryExpr {
-    pub left: Box<Stmt>,
-    pub right: Box<Stmt>,
+    pub left: Box<Node>,
+    pub right: Box<Node>,
     pub operator: char,
 }
 
 impl BinaryExpr {
-    pub fn new(left: Box<Stmt>, right: Box<Stmt>, operator: char) -> Self {
+    pub fn new(left: Box<Node>, right: Box<Node>, operator: char) -> Self {
         BinaryExpr {
             left: left,
             right: right,

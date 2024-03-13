@@ -1,5 +1,6 @@
+use core::panic;
+
 use crate::tokens::*;
-use crate::error::{parse_token_error, operation_error};
 
 pub struct Lexer {
     source: String,
@@ -96,19 +97,17 @@ impl Lexer {
             '&' => {
                 match self.next_char('&') {
                     true => return self.make_token(TokenType::TokenAnd),
-                    false => operation_error("Invalid AND operation. Use && instead.", &self.line.to_string()),
+                    false => panic!(),
                 }
             }
             '|' => {
                 match self.next_char('|') {
                     true => return self.make_token(TokenType::TokenOr),
-                    false => operation_error("Invalid OR operation. Use || instead.", &self.line.to_string()),
+                    false => panic!(),
                 }
             }
-            _ => parse_token_error("Invalid character", &self.ch.to_string(), &self.line.to_string()),
+            _ => panic!(),
         };
-
-        unreachable!()
     }
     
     fn read_char(&mut self) {
@@ -209,7 +208,6 @@ impl Lexer {
 
         if token_type == TokenType::TokenNull {
             let literal: &'static str = "null";
-            parse_token_error("Null is not supported in opal", &literal, self.line.to_string().as_str());
         }
 
         if token_type != TokenType::TokenIdentifier {
