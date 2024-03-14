@@ -4,7 +4,6 @@ use std::fs;
 use crate::parser::{self, Parser};
 use crate::tokens::Token;
 use crate::lexer::Lexer;
-use crate::ast::Program;
 
 fn read_file(path: String) -> String {
     fs::read_to_string(path).unwrap()
@@ -22,6 +21,11 @@ pub fn opalc(files: VecDeque<String>) {
             println!("{} | {:#?} | {}", &x.literal, &x.token_type, &x.line)
         }
 
-        let parser = Parser::new(tokens)
+        let mut parser = Parser::new(tokens.into());
+        let program = parser.create_ast();
+
+        for x in &program.body {
+            println!("{:#?}", x);
+        }
     }
 }
