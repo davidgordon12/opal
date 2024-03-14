@@ -6,6 +6,7 @@ use opal::opalc;
 mod opal;
 mod tokens;
 mod lexer;
+mod parser;
 mod ast;
 
 fn main() {
