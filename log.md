@@ -31,3 +31,6 @@ Complex binary expressions now work, with a brute force approach of pushing each
 
 ## 2024-01-09
 The global entry point is now "main", and I'm linking with glibc just so I can get Opal off the ground a bit quicker. We have implemented print for digits using glibc's printf, and I plan on adding support for more glibc functions, but first I plan on doing a small refactor of our code generation (compiler.rs).
+
+## 2024-03-14
+The language has pivoted to be a stack-based interpreted language rather than a compiled one, since I have realized I am simply not ready to take on such a task, this way it will be a lot more managable with my current knowledge. In the future, I still plan on making a compiler for the language, since it will always be small. I have begun rewriting the parser from scratch. I previously was following a couple tutorials but I realized mixing the code from a few people into my own wouldn't workout well, so I plan on just rolling my own, tackling the syntax slowly. It won't be ideal or follow any "best practice" patterns, but it will be my own and work for my language.
