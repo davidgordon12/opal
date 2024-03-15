@@ -128,16 +128,54 @@ impl Parser {
             TokenType::TokenString => return Node::OString(OString::new(token.literal)),
             TokenType::TokenFloat => return Node::Float(Float::new(token.literal.parse::<f64>().unwrap())),
             TokenType::TokenIdentifier => return Node::Identifier(Identifier::new(token.literal)),
+            TokenType::TokenLeftParen => {
+                let val = self.parse_node();
+
+                if self.get_token().token_type != TokenType::TokenRightParen {
+                    panic!()
+                }
+
+                return val;
+            }
             _ => panic!(),
         }
     }
 
     fn parse_addition(&mut self) -> Node {
-        let mut left = self.parse_primary();
+        let mut left = self.parse_multiplication();
 
         while self.peek_next().token_type == TokenType::TokenPlus
             || self.peek_next().token_type == TokenType::TokenMinus 
         {
+            let op = self.get_token();
+            let right = self.parse_multiplication();
+            left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
+                op.literal.as_bytes()[0 as usize] as char))
+        }
+
+        left
+    }
+
+    fn parse_multiplication(&mut self) -> Node {
+        let mut left = self.parse_exponent();
+
+        while self.peek_next().token_type == TokenType::TokenStar
+            || self.peek_next().token_type == TokenType::TokenSlash 
+            || self.peek_next().token_type == TokenType::TokenModulo
+        {
+            let op = self.get_token();
+            let right = self.parse_exponent();
+            left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
+                op.literal.as_bytes()[0 as usize] as char))
+        }
+
+        left
+    }
+
+    fn parse_exponent(&mut self) -> Node {
+        let mut left = self.parse_primary();
+
+        while self.peek_next().token_type == TokenType::TokenPower {
             let op = self.get_token();
             let right = self.parse_primary();
             left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
