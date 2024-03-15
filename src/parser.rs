@@ -57,6 +57,24 @@ impl Parser {
         match self.peek_next().token_type {
             TokenType::TokenProc => return Node::ProcDeclaration(self.parse_procedure()),
             TokenType::TokenLet => return Node::LetDeclaration(self.parse_variable()),
+            _ => return self.parse_expression(),
+        }
+    }
+
+    fn parse_expression(&mut self) -> Node {
+        match self.peek_next().token_type {
+            TokenType::TokenReturn => {
+                self.get_token();
+                let value = self.parse_expression();
+                self.get_token();
+                return Node::ReturnStatement(ReturnStatement::new(Box::from(value)));
+            }
+            TokenType::TokenPrint => {
+                self.get_token();
+                let value = self.parse_expression();
+                self.get_token();
+                return Node::PrintStatement(PrintStatement::new(Box::from(value)));
+            }
             _ => return self.parse_addition(),
         }
     }

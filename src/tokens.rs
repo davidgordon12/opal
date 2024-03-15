@@ -18,7 +18,7 @@ pub enum TokenType {
     TokenIdentifier, TokenString, TokenNumber, TokenFloat,
     
     // Keywords.
-    TokenAnd, TokenElse, TokenFalse,
+    TokenAnd, TokenElse, TokenFalse, TokenPrint,
     TokenFor, TokenProc, TokenIf, TokenNull, TokenOr,
     TokenReturn, TokenTrue, TokenLet, TokenNot,
     
@@ -48,6 +48,7 @@ pub fn reserved_keyword(keyword: &str) -> TokenType {
         "return" => TokenType::TokenReturn,
         "str" => TokenType::TokenString,
         "number" => TokenType::TokenNumber,
+        "print" => TokenType::TokenPrint,
         _ => TokenType::TokenIdentifier,
     }
 }

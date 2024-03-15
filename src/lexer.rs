@@ -154,6 +154,7 @@ impl Lexer {
             TokenType::TokenGreater => literal = ">",
             TokenType::TokenGreaterEqual => literal = ">=",
             TokenType::TokenAnd => literal = "&&",
+            TokenType::TokenPrint => literal = "print",
             TokenType::TokenOr => literal = "||",
             TokenType::TokenProc => literal = "proc",
             TokenType::TokenIf => literal = "if",
@@ -213,10 +214,6 @@ impl Lexer {
 
     
         let token_type = reserved_keyword(&ident.to_lowercase());
-
-        if token_type == TokenType::TokenNull {
-            let literal: &'static str = "null";
-        }
 
         if token_type != TokenType::TokenIdentifier {
             return self.make_token(token_type)

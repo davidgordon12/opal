@@ -8,6 +8,8 @@ pub enum Node {
     NullLiteral(NullLiteral),
     LetDeclaration(LetDeclaration),
     ProcDeclaration(ProcDeclaration),
+    ReturnStatement(ReturnStatement),
+    PrintStatement(PrintStatement),
 }
 
 #[derive(Debug, Clone)]
@@ -131,6 +133,32 @@ impl NullLiteral {
     pub fn new() -> Self {
         NullLiteral {
             value: String::from("null"),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ReturnStatement {
+    value: Box<Node>,
+}
+
+impl ReturnStatement {
+    pub fn new(value: Box<Node>) -> Self {
+        ReturnStatement {
+            value: value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct PrintStatement {
+    value: Box<Node>,
+}
+
+impl PrintStatement {
+    pub fn new(value: Box<Node>) -> Self {
+        PrintStatement {
+            value: value,
         }
     }
 }
