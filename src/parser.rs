@@ -88,7 +88,7 @@ impl Parser {
             panic!()
         }
 
-        let mut proc = ProcDeclaration::new(ident.literal);
+        let mut proc = ProcDeclaration::new(ident.literal, TokenType::TokenVoid);
 
         if self.get_token().token_type != TokenType::TokenLeftParen {
             panic!()
@@ -101,8 +101,20 @@ impl Parser {
             }
         }
 
+        if self.peek_next().token_type == TokenType::TokenArrow {
+            self.get_token();
+            let retValue = self.get_token().token_type;
+            match retValue {
+                TokenType::TokenNumber => proc.retValue = retValue,
+                TokenType::TokenFloat => proc.retValue = retValue,
+                TokenType::TokenString => proc.retValue = retValue,
+                _ => panic!(),
+            }
+        }
+
+
         if self.get_token().token_type != TokenType::TokenLeftBrace {
-            panic!();
+            panic!()
         }
 
         while self.peek_next().token_type != TokenType::TokenRightBrace {
