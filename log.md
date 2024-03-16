@@ -34,3 +34,6 @@ The global entry point is now "main", and I'm linking with glibc just so I can g
 
 ## 2024-03-14
 The language has pivoted to be a stack-based interpreted language rather than a compiled one, since I have realized I am simply not ready to take on such a task, this way it will be a lot more managable with my current knowledge. In the future, I still plan on making a compiler for the language, since it will always be small. I have begun rewriting the parser from scratch. I previously was following a couple tutorials but I realized mixing the code from a few people into my own wouldn't workout well, so I plan on just rolling my own, tackling the syntax slowly. It won't be ideal or follow any "best practice" patterns, but it will be my own and work for my language.
+
+## 2024-03-16
+More work on the parser. Able to now parse functions, their return types, and their parameters. Also added print and return statements since they're the first things I will get running in the VM, and the easiest way to get feedback from any running code. I'm going to finish off function calls then begin work on the runtime environment.
