@@ -26,7 +26,7 @@ impl Parser {
     }
 
     fn peek(&self, index: usize) -> &Token {
-        if index < self.tokens.len() && index >= 0 {
+        if index < self.tokens.len() {
             return &self.tokens[index]
         }
 
@@ -103,11 +103,11 @@ impl Parser {
 
         if self.peek_next().token_type == TokenType::TokenArrow {
             self.get_token();
-            let retValue = self.get_token().token_type;
-            match retValue {
-                TokenType::TokenNumber => proc.retValue = retValue,
-                TokenType::TokenFloat => proc.retValue = retValue,
-                TokenType::TokenString => proc.retValue = retValue,
+            let ret_value = self.get_token().token_type;
+            match ret_value {
+                TokenType::TokenNumber => proc.ret_value = ret_value,
+                TokenType::TokenFloat => proc.ret_value = ret_value,
+                TokenType::TokenString => proc.ret_value = ret_value,
                 _ => panic!(),
             }
         }

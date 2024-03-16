@@ -45,15 +45,15 @@ impl LetDeclaration {
 #[derive(Debug, Clone)]
 pub struct ProcDeclaration {
     pub identifier: String,
-    pub retValue: TokenType,
+    pub ret_value: TokenType,
     pub body: Vec<Node>,
 }
 
 impl ProcDeclaration {
-    pub fn new(identifier: String, retValue: TokenType) -> Self {
+    pub fn new(identifier: String, ret_value: TokenType) -> Self {
         ProcDeclaration {
             identifier: identifier,
-            retValue: retValue,
+            ret_value: ret_value,
             body: Vec::new(),
         }
     }
