@@ -1,3 +1,5 @@
+use crate::tokens::{Token, TokenType};
+
 #[derive(Debug, Clone)]
 pub enum Node {
     Number(Number),
@@ -43,13 +45,15 @@ impl LetDeclaration {
 #[derive(Debug, Clone)]
 pub struct ProcDeclaration {
     pub identifier: String,
+    pub retValue: TokenType,
     pub body: Vec<Node>,
 }
 
 impl ProcDeclaration {
-    pub fn new(identifier: String) -> Self {
+    pub fn new(identifier: String, retValue: TokenType) -> Self {
         ProcDeclaration {
             identifier: identifier,
+            retValue: retValue,
             body: Vec::new(),
         }
     }

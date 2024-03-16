@@ -15,12 +15,12 @@ pub enum TokenType {
     TokenColon, TokenArrow,
     
     // Literals.
-    TokenIdentifier, TokenString, TokenNumber, TokenFloat,
+    TokenIdentifier, TokenString, TokenNumber, TokenFloat, 
     
     // Keywords.
     TokenAnd, TokenElse, TokenFalse, TokenPrint,
     TokenFor, TokenProc, TokenIf, TokenNull, TokenOr,
-    TokenReturn, TokenTrue, TokenLet, TokenNot,
+    TokenReturn, TokenTrue, TokenLet, TokenNot, TokenVoid,
     
     TokenEof,
 }
@@ -46,9 +46,10 @@ pub fn reserved_keyword(keyword: &str) -> TokenType {
         "null" => TokenType::TokenNull,
         "not" => TokenType::TokenNot,
         "return" => TokenType::TokenReturn,
-        "str" => TokenType::TokenString,
+        "string" => TokenType::TokenString,
         "number" => TokenType::TokenNumber,
         "print" => TokenType::TokenPrint,
+        "void" => TokenType::TokenVoid,
         _ => TokenType::TokenIdentifier,
     }
 }
