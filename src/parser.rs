@@ -25,6 +25,7 @@ impl Parser {
         program
     }
 
+    /*
     fn peek(&self, index: usize) -> &Token {
         if index < self.tokens.len() {
             return &self.tokens[index]
@@ -32,6 +33,7 @@ impl Parser {
 
         panic!()
     }
+    */ 
 
     fn peek_next(&self) -> &Token {
         if self.tokens.len() > 0 {
@@ -56,25 +58,13 @@ impl Parser {
     fn parse_node(&mut self) -> Node {
         match self.peek_next().token_type {
             TokenType::TokenProc => return Node::ProcDeclaration(self.parse_procedure()),
-            TokenType::TokenLet => return Node::LetDeclaration(self.parse_variable()),
-            _ => return self.parse_expression(),
+            TokenType::TokenLet => return Node::LetDeclaration(self.parse_let()),
+            _ => return self.parse_statement(),
         }
     }
 
     fn parse_expression(&mut self) -> Node {
         match self.peek_next().token_type {
-            TokenType::TokenReturn => {
-                self.get_token();
-                let value = self.parse_expression();
-                self.get_token();
-                return Node::ReturnStatement(ReturnStatement::new(Box::from(value)));
-            }
-            TokenType::TokenPrint => {
-                self.get_token();
-                let value = self.parse_expression();
-                self.get_token();
-                return Node::PrintStatement(PrintStatement::new(Box::from(value)));
-            }
             _ => return self.parse_addition(),
         }
     }
@@ -129,7 +119,7 @@ impl Parser {
         proc
     }
 
-    fn parse_variable(&mut self) -> LetDeclaration {
+    fn parse_let(&mut self) -> LetDeclaration {
         self.get_token();
 
         let ident = self.get_token();
@@ -151,23 +141,21 @@ impl Parser {
         LetDeclaration::new(ident.literal, Box::from(value))
     }
 
-    fn parse_primary(&mut self) -> Node {
-        let token = self.get_token();
-        match token.token_type {
-            TokenType::TokenNumber => return Node::Number(Number::new(token.literal.parse::<i64>().unwrap())),
-            TokenType::TokenString => return Node::OString(OString::new(token.literal)),
-            TokenType::TokenFloat => return Node::Float(Float::new(token.literal.parse::<f64>().unwrap())),
-            TokenType::TokenIdentifier => return Node::Identifier(Identifier::new(token.literal)),
-            TokenType::TokenLeftParen => {
-                let val = self.parse_node();
-
-                if self.get_token().token_type != TokenType::TokenRightParen {
-                    panic!()
-                }
-
-                return val;
+    fn parse_statement(&mut self) -> Node {
+        match self.peek_next().token_type {
+            TokenType::TokenReturn => {
+                self.get_token();
+                let value = self.parse_expression();
+                self.get_token();
+                return Node::ReturnStatement(ReturnStatement::new(Box::from(value)));
             }
-            _ => panic!(),
+            TokenType::TokenPrint => {
+                self.get_token();
+                let value = self.parse_expression();
+                self.get_token();
+                return Node::PrintStatement(PrintStatement::new(Box::from(value)));
+            }
+            _ => return self.parse_expression(),
         }
     }
 
@@ -213,5 +201,65 @@ impl Parser {
         }
 
         left
+    }
+
+    fn parse_primary(&mut self) -> Node {
+        let token = self.get_token();
+        println!("{}", &token.literal);
+        match token.token_type {
+            TokenType::TokenNumber => return Node::Number(Number::new(token.literal.parse::<i64>().unwrap())),
+            TokenType::TokenString => return Node::OString(OString::new(token.literal)),
+            TokenType::TokenFloat => return Node::Float(Float::new(token.literal.parse::<f64>().unwrap())),
+            TokenType::TokenIdentifier => {
+                let ident = Identifier::new(token.literal);
+
+                if self.peek_next().token_type == TokenType::TokenLeftParen {
+                    return self.parse_call(ident)
+                }
+
+                return Node::Identifier(ident)
+            },
+            TokenType::TokenLeftParen => {
+                let val = self.parse_node();
+
+                if self.get_token().token_type != TokenType::TokenRightParen {
+                    panic!()
+                }
+
+                return val;
+            }
+            _ => panic!(),
+        }
+    }
+
+    fn parse_call(&mut self, caller: Identifier) -> Node {
+        let mut args: Vec<Identifier> = Vec::new();
+
+        self.get_token();
+
+        while self.peek_next().token_type != TokenType::TokenRightParen {
+            let token = self.get_token();
+
+            match token.token_type {
+                TokenType::TokenIdentifier => args.push(Identifier::new(token.literal)),
+                _ => panic!(),
+            }
+
+            match self.peek_next().token_type {
+                TokenType::TokenComma => { self.get_token(); },
+                TokenType::TokenRightParen => break,
+                _ => panic!()
+            }
+        }
+        
+        if self.get_token().token_type != TokenType::TokenRightParen {
+            panic!()
+        }
+
+        if self.get_token().token_type != TokenType::TokenSemicolon {
+            panic!()
+        }
+
+        return Node::ProcedureCall(ProcedureCall::new(args, caller))
     }
 }

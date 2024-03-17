@@ -1,4 +1,4 @@
-use crate::tokens::{Token, TokenType};
+use crate::tokens::TokenType;
 
 #[derive(Debug, Clone)]
 pub enum Node {
@@ -7,11 +7,11 @@ pub enum Node {
     OString(OString),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),    
-    NullLiteral(NullLiteral),
     LetDeclaration(LetDeclaration),
     ProcDeclaration(ProcDeclaration),
     ReturnStatement(ReturnStatement),
     PrintStatement(PrintStatement),
+    ProcedureCall(ProcedureCall),
 }
 
 #[derive(Debug, Clone)]
@@ -129,19 +129,6 @@ impl OString {
 }
 
 #[derive(Debug, Clone)]
-pub struct NullLiteral {
-    pub value: String,
-}
-
-impl NullLiteral {
-    pub fn new() -> Self {
-        NullLiteral {
-            value: String::from("null"),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct ReturnStatement {
     value: Box<Node>,
 }
@@ -163,6 +150,21 @@ impl PrintStatement {
     pub fn new(value: Box<Node>) -> Self {
         PrintStatement {
             value: value,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ProcedureCall {
+    args: Vec<Identifier>,
+    caller: Identifier,
+}
+
+impl ProcedureCall {
+    pub fn new(args: Vec<Identifier>, caller: Identifier) -> Self {
+        ProcedureCall {
+            args: args,
+            caller: caller,
         }
     }
 }

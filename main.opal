@@ -4,3 +4,5 @@ proc main(a, b, c) -> Number {
 	print (3 % 2) ^ 3 - 1;
 	return 1;
 }
+
+main(a, b, c);

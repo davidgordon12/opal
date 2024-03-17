@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::fs;
 
-use crate::parser::{self, Parser};
+use crate::parser::Parser;
 use crate::tokens::Token;
 use crate::lexer::Lexer;
 

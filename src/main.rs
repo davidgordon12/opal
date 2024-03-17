@@ -10,6 +10,8 @@ mod parser;
 mod ast;
 
 fn main() {
+    env::set_var("RUST_BACKTRACE", "1");
+
     let mut args: VecDeque<String> = env::args().collect();
 
     if args.len() == 1 {
