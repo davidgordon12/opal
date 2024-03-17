@@ -205,7 +205,6 @@ impl Parser {
 
     fn parse_primary(&mut self) -> Node {
         let token = self.get_token();
-        println!("{}", &token.literal);
         match token.token_type {
             TokenType::TokenNumber => return Node::Number(Number::new(token.literal.parse::<i64>().unwrap())),
             TokenType::TokenString => return Node::OString(OString::new(token.literal)),
