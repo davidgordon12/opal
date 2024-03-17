@@ -15,19 +15,6 @@ pub enum Node {
 }
 
 #[derive(Debug, Clone)]
-pub struct Program {
-    pub body: Vec<Node>,
-}
-
-impl Program {
-    pub fn new() -> Self {
-        Program {
-            body: Vec::new(),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct LetDeclaration {
     pub identifier: String,
     pub value: Box<Node>,

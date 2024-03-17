@@ -9,6 +9,8 @@ mod lexer;
 mod parser;
 mod ast;
 
+mod runtime;
+
 fn main() {
     let mut args: VecDeque<String> = env::args().collect();
 

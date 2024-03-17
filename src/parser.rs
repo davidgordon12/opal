@@ -14,12 +14,12 @@ impl Parser {
         }
     }
 
-    pub fn create_ast(&mut self) -> Program {
-        let mut program = Program::new();
+    pub fn create_ast(&mut self) -> Vec<Node> {
+        let mut program = Vec::new();
 
         while !self.eof() {
             let node = self.parse_node();
-            program.body.push(node);
+            program.push(node);
         }
 
         program

@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 use std::fs;
 
 use crate::parser::Parser;
+use crate::runtime::vm::{self, OVM};
 use crate::tokens::Token;
 use crate::lexer::Lexer;
 
@@ -24,8 +25,11 @@ pub fn opalc(files: VecDeque<String>) {
         let mut parser = Parser::new(tokens.into());
         let program = parser.create_ast();
 
-        for x in &program.body {
+        for x in &program {
             println!("{:#?}", x);
         }
+
+        let mut vm = OVM::new(program);
+        vm.execute();
     }
 }
