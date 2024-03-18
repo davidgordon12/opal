@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast::{BinaryExpr, LetDeclaration, Node, Number, OString};
+use crate::ast::{BinaryExpr, LetDeclaration, Node};
 use crate::runtime::values::Value;
 
 pub struct OVM {
@@ -44,14 +44,143 @@ impl OVM {
             Node::OString(x) => self.add_constant(decleration.identifier, Value::OString(x.value)),
             Node::Number(x) => self.add_constant(decleration.identifier, Value::Number(x.value)),
             Node::Float(x) => self.add_constant(decleration.identifier, Value::Float(x.value)),
-            Node::BinaryExpr(x) => self.add_constant(decleration.identifier, 
-                self.evaluate_binary_expression(x)),
-            
+            Node::BinaryExpr(x) => {
+                let val = self.evaluate_binary_expression(x);
+                self.add_constant(decleration.identifier, val);
+            },
             _ => panic!()
         }
     }
 
     fn evaluate_binary_expression(&mut self, expr: BinaryExpr) -> Value {
+        let lhs = *expr.left;
 
+        println!("left -> {:#?}", lhs);
+
+        match lhs {
+            Node::Number(x) => { self.stack.push(Value::Number(x.value)); },
+            Node::Float(x) => { self.stack.push(Value::Float(x.value)); },
+            Node::BinaryExpr(x) => { self.evaluate_binary_expression(x); },
+            _ => panic!(),
+        }
+
+        let rhs = *expr.right;
+
+        println!("right -> {:#?}", rhs);
+
+        match rhs {
+            Node::Number(x) =>  { self.stack.push(Value::Number(x.value)); },
+            Node::Float(x) => { self.stack.push(Value::Float(x.value)); },
+            Node::BinaryExpr(x) => { self.evaluate_binary_expression(x); },
+            _ => panic!(),
+        }
+
+        /* Horrifying code, but a brighter way to solve this hasn't come to me yet */
+        let operator: char = expr.operator;
+
+        let left_val = self.stack.pop().unwrap();
+        let right_val = self.stack.pop().unwrap();
+
+        match left_val {
+            Value::Number(l) => {
+                match right_val {
+                    Value::Number(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::Float(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::OString(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    }
+                }
+            },
+            Value::Float(l) => {
+                match right_val {
+                    Value::Number(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::Float(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::OString(r) => {
+                        match operator {
+                            '+' => {},
+                            '-' => {},
+                            '*' => {},
+                            '/' => {},
+                            '%' => {},
+                            '^' => {},
+                            _ => panic!(),
+                        }
+                    }
+                }
+            },
+            Value::OString(l) => {
+                match right_val {
+                    Value::Number(r) => {
+                        match operator {
+                            '+' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::Float(r) => {
+                        match operator {
+                            '+' => {},
+                            _ => panic!(),
+                        }
+                    },
+                    Value::OString(r) => {
+                        match operator {
+                            '+' => {},
+                            _ => panic!(),
+                        }
+                    }
+                }
+            },
+        }
+
+        unreachable!()
     }
 }
+
