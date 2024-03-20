@@ -117,7 +117,7 @@ impl OString {
 
 #[derive(Debug, Clone)]
 pub struct ReturnStatement {
-    value: Box<Node>,
+    pub value: Box<Node>,
 }
 
 impl ReturnStatement {
@@ -130,7 +130,7 @@ impl ReturnStatement {
 
 #[derive(Debug, Clone)]
 pub struct PrintStatement {
-    value: Box<Node>,
+    pub value: Box<Node>,
 }
 
 impl PrintStatement {
@@ -143,8 +143,8 @@ impl PrintStatement {
 
 #[derive(Debug, Clone)]
 pub struct ProcedureCall {
-    args: Vec<Identifier>,
-    caller: Identifier,
+    pub args: Vec<Identifier>,
+    pub caller: Identifier,
 }
 
 impl ProcedureCall {
