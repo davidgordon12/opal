@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::fs;
 
 use crate::parser::Parser;
-use crate::runtime::vm::{self, OVM};
+use crate::runtime::vm::OVM;
 use crate::tokens::Token;
 use crate::lexer::Lexer;
 
