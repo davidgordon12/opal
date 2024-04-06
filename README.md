@@ -1,14 +1,14 @@
 # Opal
 
-A(n in-progress) handwritten Lexer, Parser and Compiler written in Rust.
+A(n in-progress) handwritten Lexer, Parser and VM written in Rust.
 
 ## Features
-* [x] In-Depth error logging
+* [ ] In-Depth error logging
 * [x] Single arithmetic equations
 * [x] Complex binary expressions
-* [ ] Floating Point arithmetic
-* [ ] Variable declerations
-* [ ] Function Declarations
+* [x] Floating Point arithmetic
+* [x] Variable declerations
+* [x] Function Declarations
 * [ ] Basic standard library
 
 ## Build
@@ -16,17 +16,6 @@ This project relies on Cargo to build. Please ensure you have it installed.
 ```bash
 cargo run <file1.opal> <file2.opal> ...
 ```
-
-## Assembling and Linking
-This project generates NASM x86_64 Intel assembly, and is intended to be used with the GNU Linker.
-```bash
-nasm -f elf64 <file.asm> -o <output.o>
-```
-```bash
-gcc <output.o> -o <executable>
-```
-
-You should now have an executable file in a 64-bit ELF format.
 
 ## Todo
 * [x] Package up all code generation files into a single module
