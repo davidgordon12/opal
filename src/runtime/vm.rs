@@ -114,8 +114,8 @@ impl OVM {
         /* Horrifying code, but a brighter way to solve this hasn't come to me yet */
         let operator: char = expr.operator;
 
-        let left_val = self.stack.pop().unwrap();
         let right_val = self.stack.pop().unwrap();
+        let left_val = self.stack.pop().unwrap();
 
         match left_val {
             Value::Number(l) => {
