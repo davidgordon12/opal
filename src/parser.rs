@@ -1,7 +1,11 @@
 use core::panic;
 use std::collections::VecDeque;
 
-use crate::{tokens::Token, tokens::TokenType, ast::*};
+use crate::{
+    ast::*,
+    opal_error_parser_invalid_expr, opal_error_parser_oob, opal_error_parser_unexpected_token,
+    tokens::{Token, TokenType},
+};
 
 pub struct Parser {
     tokens: VecDeque<Token>,
@@ -9,9 +13,7 @@ pub struct Parser {
 
 impl Parser {
     pub fn new(tokens: VecDeque<Token>) -> Self {
-        Parser {
-            tokens: tokens,
-        }
+        Parser { tokens: tokens }
     }
 
     pub fn create_ast(&mut self) -> Vec<Node> {
@@ -25,30 +27,31 @@ impl Parser {
         program
     }
 
-    /*
-    fn peek(&self, index: usize) -> &Token {
+    fn _peek(&self, index: usize) -> &Token {
         if index < self.tokens.len() {
-            return &self.tokens[index]
+            return &self.tokens[index];
         }
 
-        panic!()
+        opal_error_parser_oob();
+        unreachable!();
     }
-    */ 
 
     fn peek_next(&self) -> &Token {
         if self.tokens.len() > 0 {
-            return &self.tokens[0]
+            return &self.tokens[0];
         }
 
-        panic!()
+        opal_error_parser_oob();
+        unreachable!();
     }
 
     fn get_token(&mut self) -> Token {
         if !self.eof() {
-            return self.tokens.pop_front().unwrap()
+            return self.tokens.pop_front().unwrap();
         }
 
-        panic!()
+        opal_error_parser_oob();
+        unreachable!();
     }
 
     fn eof(&self) -> bool {
@@ -80,12 +83,14 @@ impl Parser {
 
         let mut proc = ProcDeclaration::new(ident.literal, TokenType::TokenVoid);
 
-        if self.get_token().token_type != TokenType::TokenLeftParen {
-            panic!()
+        let mut tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenLeftParen {
+            opal_error_parser_unexpected_token('('.to_string(), tkn.literal, tkn.line);
+            unreachable!();
         }
 
         while self.get_token().token_type != TokenType::TokenRightParen {
-            if self.peek_next().token_type == TokenType::TokenRightParen { 
+            if self.peek_next().token_type == TokenType::TokenRightParen {
                 self.get_token();
                 break;
             }
@@ -93,18 +98,25 @@ impl Parser {
 
         if self.peek_next().token_type == TokenType::TokenArrow {
             self.get_token();
-            let ret_value = self.get_token().token_type;
-            match ret_value {
-                TokenType::TokenNumber => proc.ret_value = ret_value,
-                TokenType::TokenFloat => proc.ret_value = ret_value,
-                TokenType::TokenString => proc.ret_value = ret_value,
-                _ => panic!(),
+            let ret_value = self.get_token();
+            match ret_value.token_type {
+                TokenType::TokenNumber => proc.ret_value = ret_value.token_type,
+                TokenType::TokenFloat => proc.ret_value = ret_value.token_type,
+                TokenType::TokenString => proc.ret_value = ret_value.token_type,
+                _ => {
+                    opal_error_parser_unexpected_token(
+                        "Number, Float, String or no return type at all".to_string(),
+                        ret_value.literal,
+                        ret_value.line,
+                    );
+                    unreachable!()
+                }
             }
         }
 
-
-        if self.get_token().token_type != TokenType::TokenLeftBrace {
-            panic!()
+        tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenLeftBrace {
+            opal_error_parser_unexpected_token("{".to_string(), tkn.literal, tkn.line);
         }
 
         while self.peek_next().token_type != TokenType::TokenRightBrace {
@@ -112,8 +124,9 @@ impl Parser {
             proc.body.push(node);
         }
 
-        if self.get_token().token_type != TokenType::TokenRightBrace {
-            panic!()
+        tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenRightBrace {
+            opal_error_parser_unexpected_token("}".to_string(), tkn.literal, tkn.line);
         }
 
         proc
@@ -125,17 +138,23 @@ impl Parser {
         let ident = self.get_token();
 
         if ident.token_type != TokenType::TokenIdentifier {
-            panic!()
+            opal_error_parser_unexpected_token(
+                "Identifier".to_string(),
+                ident.literal.clone(),
+                ident.line,
+            );
         }
 
-        if self.get_token().token_type != TokenType::TokenEqual {
-            panic!()
+        let mut tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenEqual {
+            opal_error_parser_unexpected_token("=".to_string(), tkn.literal, tkn.line);
         }
 
         let value = self.parse_node();
 
-        if self.get_token().token_type != TokenType::TokenSemicolon {
-            panic!()
+        tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenSemicolon {
+            opal_error_parser_unexpected_token(";".to_string(), tkn.literal, tkn.line);
         }
 
         LetDeclaration::new(ident.literal, Box::from(value))
@@ -163,12 +182,15 @@ impl Parser {
         let mut left = self.parse_multiplication();
 
         while self.peek_next().token_type == TokenType::TokenPlus
-            || self.peek_next().token_type == TokenType::TokenMinus 
+            || self.peek_next().token_type == TokenType::TokenMinus
         {
             let op = self.get_token();
             let right = self.parse_multiplication();
-            left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
-                op.literal.as_bytes()[0 as usize] as char))
+            left = Node::BinaryExpr(BinaryExpr::new(
+                Box::from(left),
+                Box::from(right),
+                op.literal.as_bytes()[0 as usize] as char,
+            ))
         }
 
         left
@@ -178,13 +200,16 @@ impl Parser {
         let mut left = self.parse_exponent();
 
         while self.peek_next().token_type == TokenType::TokenStar
-            || self.peek_next().token_type == TokenType::TokenSlash 
+            || self.peek_next().token_type == TokenType::TokenSlash
             || self.peek_next().token_type == TokenType::TokenModulo
         {
             let op = self.get_token();
             let right = self.parse_exponent();
-            left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
-                op.literal.as_bytes()[0 as usize] as char))
+            left = Node::BinaryExpr(BinaryExpr::new(
+                Box::from(left),
+                Box::from(right),
+                op.literal.as_bytes()[0 as usize] as char,
+            ))
         }
 
         left
@@ -196,8 +221,11 @@ impl Parser {
         while self.peek_next().token_type == TokenType::TokenPower {
             let op = self.get_token();
             let right = self.parse_primary();
-            left = Node::BinaryExpr(BinaryExpr::new(Box::from(left), Box::from(right), 
-                op.literal.as_bytes()[0 as usize] as char))
+            left = Node::BinaryExpr(BinaryExpr::new(
+                Box::from(left),
+                Box::from(right),
+                op.literal.as_bytes()[0 as usize] as char,
+            ))
         }
 
         left
@@ -206,28 +234,36 @@ impl Parser {
     fn parse_primary(&mut self) -> Node {
         let token = self.get_token();
         match token.token_type {
-            TokenType::TokenNumber => return Node::Number(Number::new(token.literal.parse::<i64>().unwrap())),
+            TokenType::TokenNumber => {
+                return Node::Number(Number::new(token.literal.parse::<i64>().unwrap()))
+            }
             TokenType::TokenString => return Node::OString(OString::new(token.literal)),
-            TokenType::TokenFloat => return Node::Float(Float::new(token.literal.parse::<f64>().unwrap())),
+            TokenType::TokenFloat => {
+                return Node::Float(Float::new(token.literal.parse::<f64>().unwrap()))
+            }
             TokenType::TokenIdentifier => {
                 let ident = Identifier::new(token.literal);
 
                 if self.peek_next().token_type == TokenType::TokenLeftParen {
-                    return self.parse_call(ident)
+                    return self.parse_call(ident);
                 }
 
-                return Node::Identifier(ident)
-            },
+                return Node::Identifier(ident);
+            }
             TokenType::TokenLeftParen => {
                 let val = self.parse_node();
 
-                if self.get_token().token_type != TokenType::TokenRightParen {
-                    panic!()
+                let tkn = self.get_token();
+                if tkn.token_type != TokenType::TokenRightParen {
+                    opal_error_parser_unexpected_token(")".to_string(), tkn.literal, tkn.line);
                 }
 
                 return val;
             }
-            _ => panic!(),
+            _ => {
+                opal_error_parser_invalid_expr(token.line);
+                unreachable!()
+            }
         }
     }
 
@@ -241,24 +277,40 @@ impl Parser {
 
             match token.token_type {
                 TokenType::TokenIdentifier => args.push(Identifier::new(token.literal)),
-                _ => panic!(),
+                _ => {
+                    opal_error_parser_unexpected_token(")".to_string(), token.literal, token.line);
+                    unreachable!()
+                }
             }
 
             match self.peek_next().token_type {
-                TokenType::TokenComma => { self.get_token(); },
+                TokenType::TokenComma => {
+                    self.get_token();
+                }
                 TokenType::TokenRightParen => break,
-                _ => panic!()
+                _ => {
+                    opal_error_parser_unexpected_token(
+                        ")".to_string(),
+                        self.peek_next().literal.clone(),
+                        self.peek_next().line,
+                    );
+                    unreachable!()
+                }
             }
         }
-        
-        if self.get_token().token_type != TokenType::TokenRightParen {
-            panic!()
+
+        let mut tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenRightParen {
+            opal_error_parser_unexpected_token(")".to_string(), tkn.literal, tkn.line);
+            unreachable!()
         }
 
-        if self.get_token().token_type != TokenType::TokenSemicolon {
-            panic!()
+        tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenSemicolon {
+            opal_error_parser_unexpected_token(";".to_string(), tkn.literal, tkn.line);
+            unreachable!()
         }
 
-        return Node::ProcedureCall(ProcedureCall::new(args, caller))
+        return Node::ProcedureCall(ProcedureCall::new(args, caller));
     }
 }

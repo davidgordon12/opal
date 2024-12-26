@@ -35,3 +35,41 @@ pub fn opal_error_file_not_exists(file_name: String) {
     print_error_type("File does not exist", Some(file_name));
     exit(1)
 }
+
+pub fn opal_error_parser_oob() {
+    print_error_header();
+    print_error_type("Parser error", None);
+    println!("Parser went out of bounds looking for a token");
+    exit(1)
+}
+
+pub fn opal_error_parser_unexpected_token(expected: String, found: String, line: i64) {
+    print_error_header();
+    print_error_type("Parser error", None);
+    println!(
+        "Expected '{}', found '{}' on line {}",
+        expected, found, line
+    );
+    exit(1)
+}
+
+pub fn opal_error_parser_invalid_expr(line: i64) {
+    print_error_header();
+    print_error_type("Parser error", None);
+    println!("Invalid expression on line {}", line);
+    exit(1)
+}
+
+pub fn opal_error_vm_invalid_variable(ident: String) {
+    print_error_header();
+    print_error_type("Compiler error", None);
+    println!("Variable '{}' does not exist", ident);
+    exit(1)
+}
+
+pub fn opal_error_vm_invalid_expr() {
+    print_error_header();
+    print_error_type("Compiler error", None);
+    println!("Invalid expression");
+    exit(1)
+}

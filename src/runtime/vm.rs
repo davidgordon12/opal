@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
-use crate::ast::*;
 use crate::runtime::values::Value;
+use crate::{
+    ast::*, opal_error_parser_invalid_expr, opal_error_vm_invalid_expr,
+    opal_error_vm_invalid_variable,
+};
 
 pub struct OVM {
     ast: Vec<Node>,
@@ -51,7 +54,11 @@ impl OVM {
     }
 
     fn get_constant(&mut self, key: String) -> Value {
-        self.constants.get(&key).unwrap().clone()
+        let var = self.constants.get(&key);
+        if var.is_none() {
+            opal_error_vm_invalid_variable(key);
+        }
+        var.unwrap().clone()
     }
 
     fn evaluate_procedure_call(&mut self, caller: ProcedureCall) {
@@ -143,7 +150,24 @@ impl OVM {
                 let val = self.evaluate_binary_expression(x);
                 self.stack.push(val)
             }
-            _ => panic!(),
+            Node::Identifier(x) => {
+                let val = self.get_constant(x.symbol.clone());
+                match val {
+                    Value::OString(x) => {
+                        self.stack.push(Value::OString(x));
+                    }
+                    Value::Number(x) => {
+                        self.stack.push(Value::Number(x));
+                    }
+                    Value::Float(x) => {
+                        self.stack.push(Value::Float(x));
+                    }
+                }
+            }
+            _ => {
+                opal_error_vm_invalid_expr();
+                unreachable!()
+            }
         }
 
         let rhs = *expr.right;
@@ -162,7 +186,24 @@ impl OVM {
                 let val = self.evaluate_binary_expression(x);
                 self.stack.push(val)
             }
-            _ => panic!(),
+            Node::Identifier(x) => {
+                let val = self.get_constant(x.symbol.clone());
+                match val {
+                    Value::OString(x) => {
+                        self.stack.push(Value::OString(x));
+                    }
+                    Value::Number(x) => {
+                        self.stack.push(Value::Number(x));
+                    }
+                    Value::Float(x) => {
+                        self.stack.push(Value::Float(x));
+                    }
+                }
+            }
+            _ => {
+                opal_error_vm_invalid_expr();
+                unreachable!()
+            }
         }
 
         /* Horrifying code, but a brighter way to solve this hasn't come to me yet */
