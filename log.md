@@ -38,5 +38,8 @@ The language has pivoted to be a stack-based interpreted language rather than a 
 ## 2024-03-16
 More work on the parser. Able to now parse functions, their return types, and their parameters. Also added print and return statements since they're the first things I will get running in the VM, and the easiest way to get feedback from any running code. I'm going to finish off function calls then begin work on the runtime environment.
 
-## 2024-12-26
+## 2024-12-25
 Binary expressions seem to be evaluated out of order. The let.opal example program evaluates (hello + word) to (wordhello)
+
+## 2024-12-26
+Fixed Binary Expr issue, which only affected strings due to me appending them in the wrong order. Added more clear error messages to the parser and vm execution. Added the ability to call functions and pass parameters, which also means we can now use recursion (once I implement conditionals so we can have a base case).
