@@ -1,20 +1,22 @@
 use std::collections::HashMap;
 
-use crate::ast::{BinaryExpr, LetDeclaration, Node, PrintStatement};
+use crate::ast::*;
 use crate::runtime::values::Value;
 
 pub struct OVM {
     ast: Vec<Node>,
     constants: HashMap<String, Value>,
     stack: Vec<Value>,
+    function_table: HashMap<String, ProcDeclaration>,
 }
 
 impl OVM {
     pub fn new(ast: Vec<Node>) -> OVM {
         OVM {
-            ast: ast,
+            ast: ast.clone(),
             constants: HashMap::new(),
             stack: Vec::new(),
+            function_table: HashMap::new(),
         }
     }
 
@@ -24,7 +26,11 @@ impl OVM {
         for x in ast {
             match x {
                 Node::LetDeclaration(x) => self.evaluate_let_decleration(x),
+                Node::ProcDeclaration(x) => {
+                    self.function_table.insert(x.identifier.clone(), x);
+                }
                 Node::PrintStatement(x) => self.evaluate_print_statement(x),
+                Node::ProcedureCall(x) => self.evaluate_procedure_call(x),
                 _ => panic!(),
             }
         }
@@ -46,6 +52,26 @@ impl OVM {
 
     fn get_constant(&mut self, key: String) -> Value {
         self.constants.get(&key).unwrap().clone()
+    }
+
+    fn evaluate_procedure_call(&mut self, caller: ProcedureCall) {
+        let proc_option = self.function_table.get(&caller.caller.symbol);
+
+        if proc_option.is_none() {
+            return;
+        }
+
+        let proc = proc_option.unwrap().clone();
+        for node in proc.body {
+            match node {
+                Node::LetDeclaration(node) => self.evaluate_let_decleration(node),
+                Node::PrintStatement(node) => self.evaluate_print_statement(node),
+                Node::ProcedureCall(x) => self.evaluate_procedure_call(x),
+                Node::PrintStatement(x) => self.evaluate_print_statement(x),
+                Node::ReturnStatement(x) => self.evaluate_return_statement(x),
+                _ => panic!("panicked"),
+            }
+        }
     }
 
     fn evaluate_let_decleration(&mut self, decleration: LetDeclaration) {
@@ -86,6 +112,16 @@ impl OVM {
                     Value::Float(x) => println!("{}", x),
                 }
             }
+            _ => panic!(),
+        }
+    }
+
+    fn evaluate_return_statement(&mut self, stmt: ReturnStatement) {
+        match *stmt.value {
+            Node::Float(x) => {}
+            Node::Number(x) => {}
+            Node::OString(x) => {}
+            Node::Identifier(x) => {}
             _ => panic!(),
         }
     }

@@ -6,7 +6,7 @@ target
 bin/
 bin
 cargo.lock
-opal
+opalc
 *.asm
 *.o
 *.out

@@ -48,5 +48,6 @@ fn main() {
         }
     }
 
+    // Begin compilation
     opalc(args)
 }
