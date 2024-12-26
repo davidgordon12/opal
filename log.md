@@ -37,3 +37,6 @@ The language has pivoted to be a stack-based interpreted language rather than a 
 
 ## 2024-03-16
 More work on the parser. Able to now parse functions, their return types, and their parameters. Also added print and return statements since they're the first things I will get running in the VM, and the easiest way to get feedback from any running code. I'm going to finish off function calls then begin work on the runtime environment.
+
+## 2024-12-26
+Binary expressions seem to be evaluated out of order. The let.opal example program evaluates (hello + word) to (wordhello)
