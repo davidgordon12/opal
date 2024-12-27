@@ -43,3 +43,6 @@ Binary expressions seem to be evaluated out of order. The let.opal example progr
 
 ## 2024-12-26
 Fixed Binary Expr issue, which only affected strings due to me appending them in the wrong order. Added more clear error messages to the parser and vm execution. Added the ability to call functions and pass parameters, which also means we can now use recursion (once I implement conditionals so we can have a base case).
+
+## 2024 12-27
+Implemented if statements, but now the issue is properly returning or exiting a function when I want it to.
