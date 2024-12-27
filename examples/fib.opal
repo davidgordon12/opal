@@ -1,6 +1,7 @@
 proc fib(a, b) -> Number {
 	let c = a + b;
-	if c > 20 {
+	print c;
+	if c > 3 {
 		return c;
 	}
 	fib(b, c);

@@ -200,7 +200,7 @@ impl Parser {
             left = Node::BinaryExpr(BinaryExpr::new(
                 Box::from(left),
                 Box::from(right),
-                op.literal.as_bytes()[0 as usize] as char,
+                op.literal,
             ))
         }
 
@@ -218,7 +218,7 @@ impl Parser {
             left = Node::BinaryExpr(BinaryExpr::new(
                 Box::from(left),
                 Box::from(right),
-                op.literal.as_bytes()[0 as usize] as char,
+                op.literal,
             ))
         }
 
@@ -237,7 +237,7 @@ impl Parser {
             left = Node::BinaryExpr(BinaryExpr::new(
                 Box::from(left),
                 Box::from(right),
-                op.literal.as_bytes()[0 as usize] as char,
+                op.literal,
             ))
         }
 
@@ -253,7 +253,7 @@ impl Parser {
             left = Node::BinaryExpr(BinaryExpr::new(
                 Box::from(left),
                 Box::from(right),
-                op.literal.as_bytes()[0 as usize] as char,
+                op.literal,
             ))
         }
 
@@ -277,10 +277,12 @@ impl Parser {
             TokenType::TokenNumber => {
                 return Node::Number(Number::new(token.literal.parse::<i64>().unwrap()))
             }
-            TokenType::TokenString => return Node::OString(OString::new(token.literal)),
             TokenType::TokenFloat => {
                 return Node::Float(Float::new(token.literal.parse::<f64>().unwrap()))
             }
+            TokenType::TokenString => return Node::OString(OString::new(token.literal)),
+            TokenType::TokenTrue => return Node::Boolean(Boolean::new(true)),
+            TokenType::TokenFalse => return Node::Boolean(Boolean::new(false)),
             TokenType::TokenIdentifier => {
                 let ident = Identifier::new(token.literal);
 

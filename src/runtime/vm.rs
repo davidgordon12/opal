@@ -22,8 +22,11 @@ impl OVM {
 
     pub fn execute(&mut self) {
         let ast = self.ast.clone();
+        self._execute(ast);
+    }
 
-        for x in ast {
+    fn _execute(&mut self, body: Vec<Node>) {
+        for x in body {
             match x {
                 Node::LetDeclaration(x) => self.evaluate_let_decleration(x),
                 Node::ProcDeclaration(x) => {
@@ -31,6 +34,10 @@ impl OVM {
                 }
 
                 Node::PrintStatement(x) => self.evaluate_print_statement(x),
+                Node::ReturnStatement(x) => {
+                    self.evaluate_return_statement(x);
+                    return;
+                }
                 Node::IfStatement(x) => self.evaluate_if_statement(x),
 
                 Node::ProcedureCall(x) => self.evaluate_procedure_call(x),
@@ -49,6 +56,9 @@ impl OVM {
             }
             Value::Float(x) => {
                 self.constants.insert(key, Value::Float(x));
+            }
+            Value::Boolean(x) => {
+                self.constants.insert(key, Value::Boolean(x));
             }
         }
     }
@@ -76,6 +86,7 @@ impl OVM {
                 Node::ProcedureCall(x) => self.evaluate_procedure_call(x),
                 Node::PrintStatement(x) => self.evaluate_print_statement(x),
                 Node::ReturnStatement(x) => self.evaluate_return_statement(x),
+                Node::IfStatement(x) => self.evaluate_if_statement(x),
                 _ => panic!("panicked"),
             }
         }
@@ -109,6 +120,7 @@ impl OVM {
                     Value::OString(x) => println!("{}", x),
                     Value::Number(x) => println!("{}", x),
                     Value::Float(x) => println!("{}", x),
+                    Value::Boolean(x) => println!("{}", x),
                 }
             }
             Node::Identifier(x) => {
@@ -117,6 +129,7 @@ impl OVM {
                     Value::OString(x) => println!("{}", x),
                     Value::Number(x) => println!("{}", x),
                     Value::Float(x) => println!("{}", x),
+                    Value::Boolean(x) => println!("{}", x),
                 }
             }
             _ => panic!(),
@@ -125,8 +138,20 @@ impl OVM {
 
     fn evaluate_if_statement(&mut self, stmt: IfStatement) {
         match *stmt.expr {
-            Node::BinaryExpr(x) => {}
-            Node::ProcedureCall(x) => {}
+            Node::BinaryExpr(x) => {
+                let val = self.evaluate_binary_expression(x);
+                match val {
+                    Value::Boolean(x) => {
+                        if x == true {
+                            self._execute(stmt.body);
+                        } else {
+                            return;
+                        }
+                    }
+                    _ => panic!(),
+                }
+            }
+            Node::ProcedureCall(x) => { /* did the proc return true or false */ }
             _ => panic!(),
         }
     }
@@ -136,10 +161,22 @@ impl OVM {
             return;
         }
         match *stmt.value.unwrap() {
-            Node::Float(x) => {}
-            Node::Number(x) => {}
-            Node::OString(x) => {}
-            Node::Identifier(x) => {}
+            Node::Float(x) => {
+                self.stack.push(Value::Float(x.value));
+            }
+            Node::Number(x) => {
+                self.stack.push(Value::Number(x.value));
+            }
+            Node::OString(x) => {
+                self.stack.push(Value::OString(x.value));
+            }
+            Node::Boolean(x) => {
+                self.stack.push(Value::Boolean(x.value));
+            }
+            Node::Identifier(x) => {
+                let val = self.get_constant(x.symbol);
+                self.stack.push(val);
+            }
             _ => panic!(),
         }
     }
@@ -172,6 +209,9 @@ impl OVM {
                     }
                     Value::Float(x) => {
                         self.stack.push(Value::Float(x));
+                    }
+                    Value::Boolean(x) => {
+                        self.stack.push(Value::Boolean(x));
                     }
                 }
             }
@@ -209,6 +249,9 @@ impl OVM {
                     Value::Float(x) => {
                         self.stack.push(Value::Float(x));
                     }
+                    Value::Boolean(x) => {
+                        self.stack.push(Value::Boolean(x));
+                    }
                 }
             }
             _ => {
@@ -218,92 +261,120 @@ impl OVM {
         }
 
         /* Horrifying code, but a brighter way to solve this hasn't come to me yet */
-        let operator: char = expr.operator;
+        let operator = expr.operator;
 
         let right_val = self.stack.pop().unwrap();
         let left_val = self.stack.pop().unwrap();
 
         match left_val {
             Value::Number(l) => match right_val {
-                Value::Number(r) => match operator {
-                    '+' => return Value::Number(l + r),
-                    '-' => return Value::Number(l - r),
-                    '*' => return Value::Number(l * r),
-                    '/' => return Value::Float(l as f64 / r as f64),
-                    '%' => return Value::Float(l as f64 % r as f64),
-                    '^' => return Value::Float((l as f64).powf(r as f64)),
+                Value::Number(r) => match operator.as_str() {
+                    "+" => return Value::Number(l + r),
+                    "-" => return Value::Number(l - r),
+                    "*" => return Value::Number(l * r),
+                    "/" => return Value::Float(l as f64 / r as f64),
+                    "%" => return Value::Float(l as f64 % r as f64),
+                    "^" => return Value::Float((l as f64).powf(r as f64)),
+                    ">" => return Value::Boolean(l > r),
+                    ">=" => return Value::Boolean(l >= r),
+                    "<" => return Value::Boolean(l < r),
+                    "<=" => return Value::Boolean(l <= r),
+                    "!=" => return Value::Boolean(l != r),
+                    "==" => return Value::Boolean(l == r),
                     _ => panic!(),
                 },
-                Value::Float(r) => match operator {
-                    '+' => return Value::Float(l as f64 + r),
-                    '-' => return Value::Float(l as f64 - r),
-                    '*' => return Value::Float(l as f64 * r),
-                    '/' => return Value::Float(l as f64 / r),
-                    '%' => return Value::Float(l as f64 % r),
-                    '^' => return Value::Float((l as f64).powf(r)),
+                Value::Float(r) => match operator.as_str() {
+                    "+" => return Value::Float(l as f64 + r),
+                    "-" => return Value::Float(l as f64 - r),
+                    "*" => return Value::Float(l as f64 * r),
+                    "/" => return Value::Float(l as f64 / r),
+                    "%" => return Value::Float(l as f64 % r),
+                    "^" => return Value::Float((l as f64).powf(r)),
+                    ">" => return Value::Boolean(l as f64 > r),
+                    ">=" => return Value::Boolean(l as f64 >= r),
+                    "<" => return Value::Boolean((l as f64) < r),
+                    "<=" => return Value::Boolean(l as f64 <= r),
+                    "!=" => return Value::Boolean(l as f64 != r),
+                    "==" => return Value::Boolean(l as f64 == r),
                     _ => panic!(),
                 },
-                Value::OString(r) => match operator {
-                    '+' => {
+                Value::OString(r) => match operator.as_str() {
+                    "+" => {
                         let mut l_str: String = l.to_string();
                         l_str.push_str(r.as_str());
                         return Value::OString(l_str);
                     }
                     _ => panic!(),
                 },
+                _ => panic!(),
             },
             Value::Float(l) => match right_val {
-                Value::Number(r) => match operator {
-                    '+' => return Value::Float(l + r as f64),
-                    '-' => return Value::Float(l - r as f64),
-                    '*' => return Value::Float(l * r as f64),
-                    '/' => return Value::Float(l / r as f64),
-                    '%' => return Value::Float(l % r as f64),
-                    '^' => return Value::Float((l).powf(r as f64)),
+                Value::Number(r) => match operator.as_str() {
+                    "+" => return Value::Float(l + r as f64),
+                    "-" => return Value::Float(l - r as f64),
+                    "*" => return Value::Float(l * r as f64),
+                    "/" => return Value::Float(l / r as f64),
+                    "%" => return Value::Float(l % r as f64),
+                    "^" => return Value::Float((l).powf(r as f64)),
+                    ">" => return Value::Boolean(l > r as f64),
+                    ">=" => return Value::Boolean(l >= r as f64),
+                    "<" => return Value::Boolean(l < r as f64),
+                    "<=" => return Value::Boolean(l <= r as f64),
+                    "!=" => return Value::Boolean(l != r as f64),
+                    "==" => return Value::Boolean(l == r as f64),
                     _ => panic!(),
                 },
-                Value::Float(r) => match operator {
-                    '+' => return Value::Float(l + r),
-                    '-' => return Value::Float(l - r),
-                    '*' => return Value::Float(l * r),
-                    '/' => return Value::Float(l / r),
-                    '%' => return Value::Float(l % r),
-                    '^' => return Value::Float((l).powf(r)),
+                Value::Float(r) => match operator.as_str() {
+                    "+" => return Value::Float(l + r),
+                    "-" => return Value::Float(l - r),
+                    "*" => return Value::Float(l * r),
+                    "/" => return Value::Float(l / r),
+                    "%" => return Value::Float(l % r),
+                    "^" => return Value::Float((l).powf(r)),
+                    ">" => return Value::Boolean(l > r),
+                    ">=" => return Value::Boolean(l >= r),
+                    "<" => return Value::Boolean(l < r),
+                    "<=" => return Value::Boolean(l <= r),
+                    "!=" => return Value::Boolean(l != r),
+                    "==" => return Value::Boolean(l == r),
                     _ => panic!(),
                 },
-                Value::OString(r) => match operator {
-                    '+' => {
+                Value::OString(r) => match operator.as_str() {
+                    "+" => {
                         let mut l_str: String = l.to_string();
                         l_str.push_str(r.as_str());
                         return Value::OString(l_str);
                     }
                     _ => panic!(),
                 },
+                _ => panic!(),
             },
             Value::OString(l) => match right_val {
-                Value::Number(r) => match operator {
-                    '+' => {
+                Value::Number(r) => match operator.as_str() {
+                    "+" => {
                         let mut r_str: String = r.to_string();
                         r_str.push_str(l.as_str());
                         return Value::OString(r_str);
                     }
                     _ => panic!(),
                 },
-                Value::Float(r) => match operator {
-                    '+' => {
+                Value::Float(r) => match operator.as_str() {
+                    "+" => {
                         let mut r_str: String = r.to_string();
                         r_str.push_str(l.as_str());
                         return Value::OString(r_str);
                     }
                     _ => panic!(),
                 },
-                Value::OString(r) => match operator {
-                    '+' => {
+                Value::OString(r) => match operator.as_str() {
+                    "+" => {
                         return Value::OString(l + &r);
                     }
                     _ => panic!(),
                 },
+                _ => panic!(),
             },
+            _ => panic!(),
         }
     }
 }

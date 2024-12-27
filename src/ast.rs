@@ -5,6 +5,7 @@ pub enum Node {
     Number(Number),
     Float(Float),
     OString(OString),
+    Boolean(Boolean),
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),
     LetDeclaration(LetDeclaration),
@@ -51,11 +52,11 @@ impl ProcDeclaration {
 pub struct BinaryExpr {
     pub left: Box<Node>,
     pub right: Box<Node>,
-    pub operator: char,
+    pub operator: String,
 }
 
 impl BinaryExpr {
-    pub fn new(left: Box<Node>, right: Box<Node>, operator: char) -> Self {
+    pub fn new(left: Box<Node>, right: Box<Node>, operator: String) -> Self {
         BinaryExpr {
             left: left,
             right: right,
@@ -105,6 +106,17 @@ pub struct OString {
 impl OString {
     pub fn new(value: String) -> Self {
         OString { value: value }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Boolean {
+    pub value: bool,
+}
+
+impl Boolean {
+    pub fn new(value: bool) -> Self {
+        Boolean { value: value }
     }
 }
 

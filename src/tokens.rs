@@ -1,27 +1,58 @@
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TokenType {
     // Single-character tokens.
-    TokenLeftParen, TokenRightParen,
-    TokenLeftBrace, TokenRightBrace,
-    TokenLeftBracket, TokenRightBracket,
-    TokenComma, TokenDot, TokenMinus, TokenPlus, TokenPower,
-    TokenSemicolon, TokenSlash, TokenStar, TokenPound, TokenModulo,
-    
+    TokenLeftParen,
+    TokenRightParen,
+    TokenLeftBrace,
+    TokenRightBrace,
+    TokenLeftBracket,
+    TokenRightBracket,
+    TokenComma,
+    TokenDot,
+    TokenMinus,
+    TokenPlus,
+    TokenPower,
+    TokenSemicolon,
+    TokenSlash,
+    TokenStar,
+    TokenPound,
+    TokenModulo,
+
     // One or two character tokens.
-    TokenBang, TokenBangEqual,
-    TokenEqual, TokenEqualEqual,
-    TokenGreater, TokenGreaterEqual,
-    TokenLess, TokenLessEqual,
-    TokenColon, TokenArrow,
-    
+    TokenBang,
+    TokenBangEqual,
+    TokenEqual,
+    TokenEqualEqual,
+    TokenGreater,
+    TokenGreaterEqual,
+    TokenLess,
+    TokenLessEqual,
+    TokenColon,
+    TokenArrow,
+
     // Literals.
-    TokenIdentifier, TokenString, TokenNumber, TokenFloat, 
-    
+    TokenIdentifier,
+    TokenString,
+    TokenNumber,
+    TokenFloat,
+    TokenBool,
+
     // Keywords.
-    TokenAnd, TokenElse, TokenFalse, TokenPrint,
-    TokenFor, TokenProc, TokenIf, TokenNull, TokenOr,
-    TokenReturn, TokenTrue, TokenLet, TokenNot, TokenVoid,
-    
+    TokenAnd,
+    TokenElse,
+    TokenFalse,
+    TokenPrint,
+    TokenFor,
+    TokenProc,
+    TokenIf,
+    TokenNull,
+    TokenOr,
+    TokenReturn,
+    TokenTrue,
+    TokenLet,
+    TokenNot,
+    TokenVoid,
+
     TokenEof,
 }
 
