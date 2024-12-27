@@ -68,7 +68,7 @@ impl Parser {
 
     fn parse_expression(&mut self) -> Node {
         match self.peek_next().token_type {
-            _ => return self.parse_addition(),
+            _ => return self.parse_comparison(),
         }
     }
 
@@ -164,9 +164,12 @@ impl Parser {
         match self.peek_next().token_type {
             TokenType::TokenReturn => {
                 self.get_token();
+                if self.peek_next().token_type == TokenType::TokenSemicolon {
+                    return Node::ReturnStatement(ReturnStatement::new(None));
+                }
                 let value = self.parse_expression();
                 self.get_token();
-                return Node::ReturnStatement(ReturnStatement::new(Box::from(value)));
+                return Node::ReturnStatement(ReturnStatement::new(Some(Box::from(value))));
             }
             TokenType::TokenPrint => {
                 self.get_token();
@@ -174,8 +177,34 @@ impl Parser {
                 self.get_token();
                 return Node::PrintStatement(PrintStatement::new(Box::from(value)));
             }
+            TokenType::TokenIf => {
+                self.get_token();
+                self.parse_if()
+            }
             _ => return self.parse_expression(),
         }
+    }
+
+    fn parse_comparison(&mut self) -> Node {
+        let mut left = self.parse_addition();
+
+        while self.peek_next().token_type == TokenType::TokenGreater
+            || self.peek_next().token_type == TokenType::TokenGreaterEqual
+            || self.peek_next().token_type == TokenType::TokenLess
+            || self.peek_next().token_type == TokenType::TokenLessEqual
+            || self.peek_next().token_type == TokenType::TokenEqualEqual
+            || self.peek_next().token_type == TokenType::TokenBangEqual
+        {
+            let op = self.get_token();
+            let right = self.parse_multiplication();
+            left = Node::BinaryExpr(BinaryExpr::new(
+                Box::from(left),
+                Box::from(right),
+                op.literal.as_bytes()[0 as usize] as char,
+            ))
+        }
+
+        left
     }
 
     fn parse_addition(&mut self) -> Node {
@@ -234,6 +263,17 @@ impl Parser {
     fn parse_primary(&mut self) -> Node {
         let token = self.get_token();
         match token.token_type {
+            TokenType::TokenIf => {
+                if self.peek_next().token_type == TokenType::TokenLeftParen {
+                    return self.parse_if();
+                }
+                opal_error_parser_unexpected_token(
+                    '{'.to_string(),
+                    self.peek_next().literal.clone(),
+                    self.peek_next().line,
+                );
+                unreachable!()
+            }
             TokenType::TokenNumber => {
                 return Node::Number(Number::new(token.literal.parse::<i64>().unwrap()))
             }
@@ -265,6 +305,28 @@ impl Parser {
                 unreachable!()
             }
         }
+    }
+
+    fn parse_if(&mut self) -> Node {
+        let expr = self.parse_expression();
+        let mut ifstmt = IfStatement::new(Box::from(expr));
+
+        let mut tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenLeftBrace {
+            opal_error_parser_unexpected_token("{".to_string(), tkn.literal, tkn.line);
+        }
+
+        while self.peek_next().token_type != TokenType::TokenRightBrace {
+            let node = self.parse_node();
+            ifstmt.body.push(node);
+        }
+
+        tkn = self.get_token();
+        if tkn.token_type != TokenType::TokenRightBrace {
+            opal_error_parser_unexpected_token("}".to_string(), tkn.literal, tkn.line);
+        }
+
+        Node::IfStatement(ifstmt)
     }
 
     fn parse_call(&mut self, caller: Identifier) -> Node {

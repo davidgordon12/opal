@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
 use crate::runtime::values::Value;
-use crate::{
-    ast::*, opal_error_parser_invalid_expr, opal_error_vm_invalid_expr,
-    opal_error_vm_invalid_variable,
-};
+use crate::{ast::*, error::*};
 
 pub struct OVM {
     ast: Vec<Node>,
@@ -32,7 +29,10 @@ impl OVM {
                 Node::ProcDeclaration(x) => {
                     self.function_table.insert(x.identifier.clone(), x);
                 }
+
                 Node::PrintStatement(x) => self.evaluate_print_statement(x),
+                Node::IfStatement(x) => self.evaluate_if_statement(x),
+
                 Node::ProcedureCall(x) => self.evaluate_procedure_call(x),
                 _ => panic!(),
             }
@@ -123,8 +123,19 @@ impl OVM {
         }
     }
 
+    fn evaluate_if_statement(&mut self, stmt: IfStatement) {
+        match *stmt.expr {
+            Node::BinaryExpr(x) => {}
+            Node::ProcedureCall(x) => {}
+            _ => panic!(),
+        }
+    }
+
     fn evaluate_return_statement(&mut self, stmt: ReturnStatement) {
-        match *stmt.value {
+        if stmt.value.is_none() {
+            return;
+        }
+        match *stmt.value.unwrap() {
             Node::Float(x) => {}
             Node::Number(x) => {}
             Node::OString(x) => {}

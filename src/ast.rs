@@ -6,11 +6,12 @@ pub enum Node {
     Float(Float),
     OString(OString),
     Identifier(Identifier),
-    BinaryExpr(BinaryExpr),    
+    BinaryExpr(BinaryExpr),
     LetDeclaration(LetDeclaration),
     ProcDeclaration(ProcDeclaration),
     ReturnStatement(ReturnStatement),
     PrintStatement(PrintStatement),
+    IfStatement(IfStatement),
     ProcedureCall(ProcedureCall),
 }
 
@@ -65,14 +66,12 @@ impl BinaryExpr {
 
 #[derive(Debug, Clone)]
 pub struct Identifier {
-    pub symbol: String
+    pub symbol: String,
 }
 
 impl Identifier {
     pub fn new(symbol: String) -> Self {
-        Identifier {
-            symbol: symbol,
-        }
+        Identifier { symbol: symbol }
     }
 }
 
@@ -83,9 +82,7 @@ pub struct Number {
 
 impl Number {
     pub fn new(value: i64) -> Self {
-        Number {
-            value: value,
-        }
+        Number { value: value }
     }
 }
 
@@ -96,9 +93,7 @@ pub struct Float {
 
 impl Float {
     pub fn new(value: f64) -> Self {
-        Float {
-            value: value,
-        }
+        Float { value: value }
     }
 }
 
@@ -109,22 +104,18 @@ pub struct OString {
 
 impl OString {
     pub fn new(value: String) -> Self {
-        OString {
-            value: value,
-        }
+        OString { value: value }
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct ReturnStatement {
-    pub value: Box<Node>,
+    pub value: Option<Box<Node>>,
 }
 
 impl ReturnStatement {
-    pub fn new(value: Box<Node>) -> Self {
-        ReturnStatement {
-            value: value,
-        }
+    pub fn new(value: Option<Box<Node>>) -> Self {
+        ReturnStatement { value: value }
     }
 }
 
@@ -135,8 +126,21 @@ pub struct PrintStatement {
 
 impl PrintStatement {
     pub fn new(value: Box<Node>) -> Self {
-        PrintStatement {
-            value: value,
+        PrintStatement { value: value }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct IfStatement {
+    pub expr: Box<Node>,
+    pub body: Vec<Node>,
+}
+
+impl IfStatement {
+    pub fn new(expr: Box<Node>) -> Self {
+        IfStatement {
+            expr: expr,
+            body: Vec::new(),
         }
     }
 }
