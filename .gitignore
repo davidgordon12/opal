@@ -1,12 +1,4 @@
 .vscode/
 target/
-target
-/target
-/target/
-bin/
-bin
 cargo.lock
 opalc
-*.asm
-*.o
-*.out
