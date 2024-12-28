@@ -35,7 +35,6 @@ pub enum TokenType {
     TokenString,
     TokenNumber,
     TokenFloat,
-    TokenBool,
 
     // Keywords.
     TokenAnd,
